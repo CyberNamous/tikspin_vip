@@ -3,8 +3,6 @@
   // Replace every value that says YOUR-... before deploying.
   "$schema": "node_modules/wrangler/config-schema.json",
 
-  // Worker name (becomes YOUR-WORKER-NAME.<your-subdomain>.workers.dev).
-  "name": "YOUR-WORKER-NAME",
 
   // The Worker entry file. llm.js and llm.json must sit next to it.
   "main": "index.js",
