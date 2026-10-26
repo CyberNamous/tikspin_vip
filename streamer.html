@@ -92,6 +92,14 @@ button.ok{background:#1f8f55}
 .note{color:var(--text);font-style:italic}
 #toast{position:fixed;right:20px;bottom:20px;background:var(--panel);border:1px solid var(--pink);border-radius:10px;padding:12px 16px;font-weight:700;max-width:360px;z-index:20}
 #toast.err{border-color:var(--red);color:var(--red)}
+nav.tabs{position:sticky;top:0;z-index:5;display:flex;background:var(--panel);border-bottom:1px solid var(--line)}
+.tabbtn{position:relative;flex:1;background:none;border:0;border-bottom:3px solid transparent;border-radius:0;padding:12px 0 9px;font-size:1.45rem;line-height:1;opacity:.55;display:flex;flex-direction:column;align-items:center;gap:4px}
+.tabbtn small{font-size:.66rem;font-weight:800;color:var(--muted);letter-spacing:.02em}
+.tabbtn.on{opacity:1;border-bottom-color:var(--pink2)}
+.tabbtn.on small{color:var(--pink)}
+.tabbtn .badge2{position:absolute;top:5px;left:calc(50% + 6px);min-width:20px;height:20px;padding:0 5px;border-radius:99px;background:var(--red);color:#fff;font-size:.72rem;font-weight:900;line-height:20px;text-align:center;border:2px solid var(--panel);box-sizing:content-box}
+.tabbtn.bellhot{box-shadow:none!important;background:none!important}
+.tabpane{display:grid;gap:22px}
 @media (max-width:900px){.twin,.boards{grid-template-columns:1fr}main{padding:14px}}
 </style>
 </head>
@@ -132,47 +140,20 @@ button.ok{background:#1f8f55}
   <header class="top">
     <h1 class="brandh"><img src="images/logo.png" alt="TikSpin VIP" width="44" height="44"> Wheel Control Panel</h1>
     <div class="bar">
-      <button class="ghost" id="bell" type="button" aria-label="Notifications">🔔 <span id="bellN">0</span></button>
       <span class="count" id="entryCount">👥 0 entered</span>
       <span class="meta" id="cmdInfo"></span>
       <button class="ghost" id="clearAlerts" type="button">Clear banner</button>
     </div>
   </header>
+  <nav class="tabs" id="tabs" aria-label="Panel sections">
+    <button type="button" class="tabbtn on" data-tab="wheel" aria-label="Wheel">🎡<small>Wheel</small></button>
+    <button type="button" class="tabbtn" data-tab="players" aria-label="Players">👥<small>Players</small><span class="badge2" id="badgePlayers" hidden></span></button>
+    <button type="button" class="tabbtn" data-tab="apps" aria-label="Applications">📝<small>Apps</small><span class="badge2" id="badgeApps" hidden></span></button>
+    <button type="button" class="tabbtn" data-tab="alerts" id="bell" aria-label="Notifications">🔔<small>Alerts</small><span class="badge2" id="bellN" hidden>0</span></button>
+    <button type="button" class="tabbtn" data-tab="settings" aria-label="Settings">⚙️<small>Settings</small></button>
+  </nav>
   <main>
-    <section class="card" id="notifCard">
-      <h2>🔔 Notifications</h2>
-      <div id="notifBox"></div>
-    </section>
-
-    <section class="card">
-      <h2>🔁 Migrate Data</h2>
-      <p class="meta" style="margin:0 0 12px">Start a fresh session without losing the current one. It only works before the wheel has been spun. The current entries are kept as a saved session, and can be carried into the new session.</p>
-      <div class="bar"><button class="ok" id="migStart" type="button">Save current &amp; start new session</button></div>
-      <div id="savedBox" style="margin-top:14px"></div>
-    </section>
-
-    <section class="card">
-      <h2>💜 Streamer to follow</h2>
-      <p class="meta" style="margin:0 0 12px">Entrants must screenshot this TikTok profile while following it. Only the display name, the @username and the Following button are checked, so follower and like counts can change freely.</p>
-      <div class="bar">
-        <input type="text" id="stName" maxlength="40" placeholder="Display name" autocomplete="off">
-        <input type="text" id="stUser" maxlength="30" placeholder="TikTok username (no @)" autocomplete="off">
-        <button class="ok" id="stSave" type="button">Save</button>
-      </div>
-    </section>
-
-    <section class="card">
-      <h2>🪪 Registered players</h2>
-      <p class="meta" style="margin:0 0 12px">Everyone who registered once is saved here for good. Search by Mobile Legends User ID and Server ID (names can change), by tracking ID, IGN or TikTok name, then enroll them into the current giveaway.</p>
-      <form class="bar" id="pForm">
-        <input type="text" id="pUid" inputmode="numeric" placeholder="User ID" maxlength="12" style="width:130px">
-        <input type="text" id="pSid" inputmode="numeric" placeholder="Server ID" maxlength="6" style="width:110px">
-        <input type="text" id="pQ" placeholder="or tracking ID / IGN / TikTok" maxlength="40" style="flex:1;min-width:180px">
-        <button type="submit">Search</button>
-      </form>
-      <div id="pBox" style="margin-top:12px"></div>
-    </section>
-
+    <div class="tabpane" data-pane="wheel">
     <section class="card">
       <h2>🎁 Giveaway</h2>
       <div class="meta" id="gwInfo">Loading...</div>
@@ -189,7 +170,6 @@ button.ok{background:#1f8f55}
         <div class="bar"><button class="sm" type="button" id="copyLink">Copy link</button></div>
       </div>
     </section>
-
     <section class="twin">
       <div class="card win">
         <h2>🏆 Declare Winner Mode</h2>
@@ -202,7 +182,6 @@ button.ok{background:#1f8f55}
         <button class="big alt" id="spinElim" type="button">Spin to knock one out</button>
       </div>
     </section>
-
     <section class="card">
       <h2>📺 Live wheel (same as the stream)</h2>
       <div class="bar" style="margin-bottom:10px">
@@ -212,7 +191,19 @@ button.ok{background:#1f8f55}
       </div>
       <iframe id="wheelPreview" title="Live wheel preview" src="about:blank"></iframe>
     </section>
-
+    </div>
+    <div class="tabpane" data-pane="players" hidden>
+    <section class="card">
+      <h2>🪪 Registered players</h2>
+      <p class="meta" style="margin:0 0 12px">Everyone who registered once is saved here for good. Search by Mobile Legends User ID and Server ID (names can change), by tracking ID, IGN or TikTok name, then enroll them into the current giveaway.</p>
+      <form class="bar" id="pForm">
+        <input type="text" id="pUid" inputmode="numeric" placeholder="User ID" maxlength="12" style="width:130px">
+        <input type="text" id="pSid" inputmode="numeric" placeholder="Server ID" maxlength="6" style="width:110px">
+        <input type="text" id="pQ" placeholder="or tracking ID / IGN / TikTok" maxlength="40" style="flex:1;min-width:180px">
+        <button type="submit">Search</button>
+      </form>
+      <div id="pBox" style="margin-top:12px"></div>
+    </section>
     <section class="card">
       <h2>Manual override</h2>
       <p class="meta" style="margin:0 0 12px">Add a player without a screenshot. This also lifts any block on those names for this giveaway.</p>
@@ -236,13 +227,6 @@ button.ok{background:#1f8f55}
         <button class="danger" type="submit">Disqualify</button>
       </form>
     </section>
-
-    <section class="board apps">
-      <h2><span>📝 Manual applications</span><span class="meta" id="aCount"></span></h2>
-      <div class="bar"><span class="meta">Accept puts the player on the wheel. Reject just removes the request.</span><span style="flex:1"></span><button class="ghost sm" id="appsClear" type="button">Clear all pending</button></div>
-      <div id="aBox"></div>
-    </section>
-
     <section class="boards">
       <div class="board good">
         <h2><span>Qualified entries</span><span class="meta" id="qCount"></span></h2>
@@ -255,6 +239,37 @@ button.ok{background:#1f8f55}
         <div class="chips" id="banChips"></div>
       </div>
     </section>
+    </div>
+    <div class="tabpane" data-pane="apps" hidden>
+    <section class="board apps">
+      <h2><span>📝 Manual applications</span><span class="meta" id="aCount"></span></h2>
+      <div class="bar"><span class="meta">Accept puts the player on the wheel. Reject just removes the request.</span><span style="flex:1"></span><button class="ghost sm" id="appsClear" type="button">Clear all pending</button></div>
+      <div id="aBox"></div>
+    </section>
+    </div>
+    <div class="tabpane" data-pane="alerts" hidden>
+    <section class="card" id="notifCard">
+      <h2>🔔 Notifications</h2>
+      <div id="notifBox"></div>
+    </section>
+    </div>
+    <div class="tabpane" data-pane="settings" hidden>
+    <section class="card">
+      <h2>💜 Streamer to follow</h2>
+      <p class="meta" style="margin:0 0 12px">Entrants must screenshot this TikTok profile while following it. Only the display name, the @username and the Following button are checked, so follower and like counts can change freely.</p>
+      <div class="bar">
+        <input type="text" id="stName" maxlength="40" placeholder="Display name" autocomplete="off">
+        <input type="text" id="stUser" maxlength="30" placeholder="TikTok username (no @)" autocomplete="off">
+        <button class="ok" id="stSave" type="button">Save</button>
+      </div>
+    </section>
+    <section class="card">
+      <h2>🔁 Migrate Data</h2>
+      <p class="meta" style="margin:0 0 12px">Start a fresh session without losing the current one. It only works before the wheel has been spun. The current entries are kept as a saved session, and can be carried into the new session.</p>
+      <div class="bar"><button class="ok" id="migStart" type="button">Save current &amp; start new session</button></div>
+      <div id="savedBox" style="margin-top:14px"></div>
+    </section>
+    </div>
   </main>
 </div>
 <div id="toast" hidden></div>
@@ -410,6 +425,7 @@ button.ok{background:#1f8f55}
 
   function renderApps(apps) {
     $('aCount').textContent = apps.length + ' pending';
+    setBadge('badgeApps', apps.length);
     var sig = apps.map(function (a) { return a.id + ':' + a.dup; }).join(',');
     if (sig === appsSig) return;
     appsSig = sig;
@@ -519,17 +535,34 @@ button.ok{background:#1f8f55}
     else toast('Copy is not available here. Select it manually.', true);
   }
 
+  function setBadge(id, n) {
+    var el = $(id);
+    el.textContent = n > 99 ? '99+' : String(n);
+    el.hidden = !(n > 0);
+  }
+
+  function showTab(name) {
+    document.querySelectorAll('.tabpane').forEach(function (p) { p.hidden = p.getAttribute('data-pane') !== name; });
+    document.querySelectorAll('.tabbtn').forEach(function (b) { b.classList.toggle('on', b.getAttribute('data-tab') === name); });
+    try { sessionStorage.setItem('streamerTab', name); } catch (_) {}
+    window.scrollTo(0, 0);
+  }
+  document.getElementById('tabs').addEventListener('click', function (e) {
+    var b = e.target.closest('.tabbtn');
+    if (b) showTab(b.getAttribute('data-tab'));
+  });
+  try { var savedTab = sessionStorage.getItem('streamerTab'); if (savedTab) showTab(savedTab); } catch (_) {}
+
   var selfOn = true;
   function renderNotifs(reqs, appCount) {
     var n = reqs.length + appCount;
-    $('bellN').textContent = String(n);
-    $('bell').classList.toggle('bellhot', n > 0);
+    setBadge('bellN', n);
     var box = $('notifBox'); box.textContent = '';
     if (!n) { box.append(h('div', { class: 'empty' }, 'Nothing waiting for you.')); return; }
     if (appCount) {
       box.append(h('div', { class: 'meta', style: 'margin-bottom:10px' }, '📝 ' + appCount + ' manual review application' + (appCount === 1 ? '' : 's') + ' waiting. '),
         h('button', { class: 'sm ghost', type: 'button', style: 'margin-bottom:12px', onclick: function () {
-          var el = document.querySelector('.board.apps'); if (el) el.scrollIntoView({ behavior: 'smooth' });
+          showTab('apps');
         } }, 'Go to applications'));
     }
     if (reqs.length) {
@@ -564,6 +597,7 @@ button.ok{background:#1f8f55}
     renderNotifs(d.name_requests || [], (d.applications || []).length);
     renderQualified(d.qualified);
     $('entryCount').textContent = '👥 ' + d.qualified.length + ' entered';
+    setBadge('badgePlayers', d.qualified.length);
     renderDisq(d.disqualified, d.blacklist);
     var c = d.config || {};
     selfOn = c.self_enter !== 'off';
@@ -660,7 +694,6 @@ button.ok{background:#1f8f55}
   ['pUid', 'pSid'].forEach(function (id) { $(id).addEventListener('input', function () { this.value = this.value.replace(/\D/g, ''); }); });
   $('pForm').addEventListener('submit', function (e) { e.preventDefault(); searchPlayers(); });
 
-  $('bell').addEventListener('click', function () { $('notifCard').scrollIntoView({ behavior: 'smooth' }); });
   $('selfToggle').addEventListener('click', function () {
     run('set_self_enter', { on: !selfOn }, 'Self-enter ' + (selfOn ? 'turned off.' : 'turned on.'));
   });
