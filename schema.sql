@@ -1,4 +1,3 @@
--- Fresh D1 schema for the Mobile Legends giveaway wheel. Run once on a new database.
 
 CREATE TABLE giveaways (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
