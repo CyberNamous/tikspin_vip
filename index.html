@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Join the Survival Wheel</title>
+<link rel="icon" type="image/png" href="images/logo.png">
+<style>
+:root{--bg:#0d0a1c;--panel:#17122b;--line:#3a2a5e;--pink:#e58bff;--pink2:#d54bf0;--neon:#b43cf5;--text:#ffffff;--muted:#a99fcf;--bad:#ff4d6d;--ok:#e58bff}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{background:radial-gradient(900px 500px at 50% -10%,#2d1450 0%,var(--bg) 70%);color:var(--text);font-family:"Avenir Next","Segoe UI",system-ui,sans-serif;display:flex;justify-content:center;padding:28px 16px 48px}
+main{width:100%;max-width:540px}
+h1{font-size:clamp(2rem,7vw,2.8rem);line-height:1.05;margin:0 0 8px;font-weight:900;letter-spacing:-.02em;color:var(--pink2);text-shadow:0 0 28px rgba(180,60,245,.45)}
+.lede{color:var(--muted);margin:0 0 24px;line-height:1.5}
+form{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;display:grid;gap:18px}
+label,.lbl{display:block;font-weight:700;margin-bottom:6px}
+input[type=text]{width:100%;background:#0d0a1c;border:1.5px solid var(--line);border-radius:10px;color:var(--text);font:inherit;padding:12px 14px}
+input[type=text]:focus{outline:none;border-color:var(--neon);box-shadow:0 0 0 3px rgba(180,60,245,.25)}
+input.invalid{border-color:var(--bad)}
+.err{color:var(--bad);font-size:.88rem;min-height:1.1em;margin-top:5px}
+.drop{display:flex;align-items:center;gap:12px;border:1.5px dashed var(--pink2);border-radius:10px;padding:14px;cursor:pointer;color:var(--muted);background:#130f26}
+.drop:hover,.drop:focus-within{border-color:var(--neon);color:var(--text)}
+.drop input{position:absolute;opacity:0;width:1px;height:1px}
+.drop b{color:var(--pink)}
+.streamer{display:flex;gap:10px;align-items:center;background:rgba(180,60,245,.12);border:1px solid var(--neon);border-radius:12px;padding:12px 14px;margin-bottom:16px;line-height:1.4}
+.streamer a{color:var(--pink);font-weight:800}
+.idrow{display:grid;grid-template-columns:1fr 120px;gap:10px}
+.chk{display:flex;gap:10px;align-items:flex-start;font-weight:600;line-height:1.45;margin:0;cursor:pointer}
+.chk input{width:20px;height:20px;margin-top:2px;accent-color:var(--neon);flex:none}
+#termsDlg .dlgbox{max-width:520px;max-height:88vh;display:flex;flex-direction:column;text-align:left;padding:18px}
+#termsDlg h2{text-align:center;margin-bottom:2px}
+#termsDlg .upd{text-align:center;font-size:.8rem;margin:0 0 10px}
+.termsbody{overflow-y:auto;border:1px solid var(--line);border-radius:10px;padding:4px 14px 8px;background:#130f26;line-height:1.55;font-size:.92rem;color:var(--text);-webkit-overflow-scrolling:touch}
+.termsbody h3{font-size:.95rem;margin:14px 0 4px;color:var(--pink2)}
+.termsbody p,.termsbody ul{margin:0 0 6px;color:var(--muted)}
+.termsbody ul{padding-left:20px}
+.termsbody a{color:var(--pink);font-weight:700}
+#termsDlg .dlgbtns{margin-top:12px}
+.logo{display:block;margin:0 auto 2px;width:150px;max-width:44vw;height:auto;mix-blend-mode:screen}
+h1{text-align:center}
+.atwrap{position:relative}
+.atwrap .at{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--pink2);font-weight:800;pointer-events:none}
+.atwrap input{width:100%;padding-left:32px}
+.hint{font-size:.82rem;color:var(--muted);margin-top:6px;line-height:1.4}
+#botFab{position:fixed;right:16px;bottom:16px;width:58px;height:58px;border-radius:50%;border:0;font-size:1.6rem;cursor:pointer;color:#fff;background:linear-gradient(135deg,var(--neon),var(--pink2));box-shadow:0 8px 28px rgba(180,60,245,.55);z-index:30;padding:0;display:flex;align-items:center;justify-content:center}
+#botPanel{position:fixed;right:12px;left:12px;bottom:86px;margin-left:auto;max-width:390px;height:min(72vh,540px);background:var(--panel);border:1.5px solid var(--neon);border-radius:16px;box-shadow:0 12px 50px rgba(0,0,0,.6),0 0 40px rgba(180,60,245,.3);display:flex;flex-direction:column;z-index:30;overflow:hidden}
+#botPanel[hidden]{display:none}
+#botHead{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid var(--line);background:#130f26}
+#botHead img{width:34px;height:34px;mix-blend-mode:screen}
+#botHead b{flex:1;font-size:1rem}
+#botClose{background:none;border:0;color:var(--muted);font-size:1.3rem;cursor:pointer;padding:6px}
+#botLog{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px;-webkit-overflow-scrolling:touch}
+.bmsg{max-width:88%;padding:9px 12px;border-radius:14px;line-height:1.45;font-size:.93rem;white-space:pre-line;word-break:break-word}
+.bmsg.bot{align-self:flex-start;background:#251c42;border-bottom-left-radius:4px}
+.bmsg.me{align-self:flex-end;background:linear-gradient(135deg,var(--neon),var(--pink2));color:#fff;border-bottom-right-radius:4px}
+.bmsg.note{align-self:center;background:transparent;color:var(--muted);font-size:.82rem;text-align:center}
+#botChips{display:flex;flex-wrap:wrap;gap:6px;padding:0 12px 8px}
+#botChips button{font:inherit;font-size:.82rem;font-weight:700;border:1px solid var(--pink);background:transparent;color:var(--pink);border-radius:999px;padding:6px 10px;cursor:pointer;text-align:left}
+#botForm{display:flex;gap:8px;padding:10px;border-top:1px solid var(--line)}
+#botForm input{flex:1;min-width:0}
+#botSend{font:inherit;font-weight:800;border:0;border-radius:10px;padding:0 16px;color:#fff;background:linear-gradient(135deg,var(--neon),var(--pink2));cursor:pointer}
+#botSend:disabled{opacity:.5}
+.bform{align-self:stretch;background:#130f26;border:1px solid var(--line);border-radius:12px;padding:12px;display:grid;gap:10px}
+.bform label{font-weight:700;font-size:.85rem;margin:0}
+.bform input{width:100%}
+.bform .linkbtn{font-size:.82rem}
+.bform .bt{font-weight:800;font-size:.9rem}
+.bform .bproof{display:grid;gap:10px}
+.bform .bst{font-size:.85rem;color:var(--muted);min-height:1em}
+.bform .bst.bad{color:#ff8a9b}
+.bform .bst.good{color:#7dffb0}
+.bform button.go{font:inherit;font-weight:800;border:0;border-radius:10px;padding:11px;color:#fff;background:linear-gradient(135deg,var(--neon),var(--pink2));cursor:pointer}
+.bform button.go:disabled{opacity:.5}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:0 0 16px;background:#130f26;border:1px solid var(--line);border-radius:12px;padding:5px}
+.tab{font:inherit;border:0;border-radius:9px;padding:9px 6px;background:transparent;color:var(--muted);cursor:pointer;line-height:1.2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:54px}
+.tab small{font-size:.72rem;font-weight:600;opacity:.85;white-space:nowrap}
+.tab b{font-size:1.05rem;font-weight:800}
+.tab.on{background:linear-gradient(135deg,var(--neon),var(--pink2));color:#fff}
+[hidden]{display:none!important}
+#paneEnter{display:grid;gap:16px}
+#enterForm{display:grid;gap:16px}
+.renamebox{display:grid;gap:10px;border-top:1px solid var(--line);padding-top:14px;margin-top:6px}
+.dlgback{position:fixed;inset:0;background:rgba(13,10,28,.88);display:flex;align-items:center;justify-content:center;padding:20px;z-index:40}
+.dlgback[hidden]{display:none}
+.dlgbox{background:var(--panel);border:1.5px solid var(--neon);border-radius:16px;padding:24px;width:100%;max-width:400px;text-align:center;box-shadow:0 0 50px rgba(180,60,245,.4)}
+.dlgbox h2{margin:0 0 8px;color:var(--pink2)}
+.dlgbox p{margin:0 0 14px;line-height:1.5;color:var(--muted)}
+.dlgbox .small{font-size:.85rem;margin:12px 0 16px}
+.tid{font-family:ui-monospace,Menlo,monospace;font-size:1.9rem;font-weight:900;letter-spacing:.08em;color:#fff;background:#130f26;border:1.5px dashed var(--pink2);border-radius:12px;padding:14px 10px;user-select:all}
+.dlgbtns{display:flex;flex-direction:column;gap:10px}
+.dlgbtns button{width:100%;min-height:48px;font:inherit;font-weight:800;line-height:1.2;white-space:nowrap;border-radius:10px;border:1.5px solid var(--pink);background:transparent;color:var(--pink);padding:12px 16px;cursor:pointer}
+.dlgbtns button.alt{background:linear-gradient(135deg,var(--neon),var(--pink2));color:#fff;border:0;box-shadow:0 6px 22px rgba(180,60,245,.35)}
+.dlgbtns button[hidden]{display:none}
+#termsDlg .dlgbtns{flex-direction:row}
+#termsDlg .dlgbtns button{flex:1;width:auto}
+.linkbtn{background:none;border:0;color:var(--pink);font:inherit;font-weight:700;cursor:pointer;padding:0;text-align:left}
+.linkbtn:focus-visible,button:focus-visible{outline:2px solid var(--neon);outline-offset:3px}
+#tutorial{background:#130f26;border:1px solid var(--line);border-radius:10px;padding:14px;color:var(--muted)}
+#tutorial[hidden]{display:none}
+#tutorial ol{margin:0 0 12px;padding-left:20px;line-height:1.55}
+.shots{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.shots img{width:100%;border-radius:8px;border:1px solid var(--line);background:#0d0a1c;min-height:90px;object-fit:cover}
+#go,#enterGo,#renameGo{background:linear-gradient(135deg,var(--neon),var(--pink2));color:#fff;border:0;border-radius:10px;font:inherit;font-weight:800;font-size:1.05rem;padding:14px;cursor:pointer;box-shadow:0 8px 30px rgba(180,60,245,.35)}
+#go:disabled,#enterGo:disabled,#renameGo:disabled{opacity:.55;cursor:progress}
+#enterGo,#renameGo{width:100%;min-height:50px}
+.bar{height:10px;background:#0d0a1c;border-radius:99px;overflow:hidden;border:1px solid var(--line)}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--neon),var(--pink));transition:width .35s ease}
+#progress[hidden]{display:none}
+#status{margin:8px 0 0;color:var(--muted);font-size:.92rem}
+#result,#enterResult{border-radius:10px;padding:14px;line-height:1.45;font-weight:600}
+#result[hidden],#enterResult[hidden]{display:none}
+#result.good,#enterResult.good{background:rgba(229,139,255,.12);border:1px solid var(--pink);color:var(--pink)}
+#result.bad,#enterResult.bad{background:rgba(255,77,109,.1);border:1px solid var(--bad);color:var(--bad)}
+textarea{width:100%;background:#0d0a1c;border:1.5px solid var(--line);border-radius:10px;color:var(--text);font:inherit;padding:10px 12px;resize:vertical}
+textarea:focus{outline:none;border-color:var(--neon);box-shadow:0 0 0 3px rgba(180,60,245,.25)}
+#manual{background:#130f26;border:1px solid var(--pink2);border-radius:10px;padding:14px;display:grid;gap:10px}
+#manual[hidden],#appStatus[hidden],#closedNote[hidden],#wheelNote[hidden]{display:none}
+#wheelNote{border-radius:10px;padding:14px;line-height:1.45;font-weight:700;background:rgba(180,60,245,.12);border:1px solid var(--neon);color:var(--text)}
+#wheelNote a{color:var(--pink)}
+#closedNote{background:rgba(255,77,109,.1);border:1px solid var(--bad);color:var(--bad);border-radius:10px;padding:14px;margin-bottom:16px;font-weight:700;line-height:1.45}
+#manual p{margin:0;line-height:1.45}
+#manual .small{color:var(--muted);font-size:.85rem}
+#manualBtn{background:transparent;color:var(--pink);border:1.5px solid var(--pink);border-radius:10px;font:inherit;font-weight:800;padding:12px;cursor:pointer}
+#manualBtn:disabled{opacity:.55;cursor:progress}
+#appStatus{border-radius:10px;padding:14px;line-height:1.45;font-weight:600;background:rgba(229,139,255,.12);border:1px solid var(--pink);color:var(--pink)}
+#appStatus.bad{background:rgba(255,77,109,.1);border-color:var(--bad);color:var(--bad)}
+@media (prefers-reduced-motion:reduce){.bar i{transition:none}}
+</style>
+</head>
+<body>
+<main>
+  <img class="logo" src="images/logo.png" alt="TikSpin VIP" width="150" height="150">
+  <h1>Join the Survival Wheel</h1>
+  <p class="lede">New here? Register once with your Mobile Legends account. Already registered? Use the Enter tab to join each giveaway in seconds.</p>
+  <div id="closedNote" role="status" hidden>Registration is closed right now. Come back when the next giveaway opens.</div>
+  <div class="tabs" role="tablist">
+    <button type="button" class="tab on" id="tabReg" role="tab" aria-selected="true"><small>New here?</small><b>Register</b></button>
+    <button type="button" class="tab" id="tabEnter" role="tab" aria-selected="false"><small>Already registered?</small><b>Enter</b></button>
+  </div>
+  <div id="streamerBox" class="streamer"><span aria-hidden="true">💜</span><span id="streamerText">Follow <b>Hastelicous</b> on TikTok first.</span></div>
+  <form id="form" novalidate>
+    <div>
+      <label for="ign">Mobile Legends IGN</label>
+      <input type="text" id="ign" autocomplete="off" maxlength="24" placeholder="Your in-game name">
+      <div class="err" id="ignErr"></div>
+    </div>
+    <div>
+      <span class="lbl">Mobile Legends ID</span>
+      <div class="idrow">
+        <input type="text" id="uid" inputmode="numeric" autocomplete="off" maxlength="12" placeholder="User ID" aria-label="Mobile Legends User ID">
+        <input type="text" id="sid" inputmode="numeric" autocomplete="off" maxlength="6" placeholder="Server ID" aria-label="Mobile Legends Server ID">
+      </div>
+      <div class="err" id="idErr"></div>
+    </div>
+    <div>
+      <label for="tt">TikTok @username</label>
+      <div class="atwrap"><span class="at" aria-hidden="true">@</span><input type="text" id="tt" autocomplete="off" autocapitalize="off" maxlength="25" placeholder="username"></div>
+      <div class="hint">The @name under your TikTok profile, not your display nickname.</div>
+      <div class="err" id="ttErr"></div>
+    </div>
+    <div>
+      <span class="lbl">Follow proof screenshot</span>
+      <label class="drop" for="shot"><span aria-hidden="true">🖼️</span><span id="fileName"><b>Choose a screenshot</b> (PNG, JPG or WebP, up to 10 MB)</span></label>
+      <input type="file" id="shot" accept="image/png,image/jpeg,image/webp" style="position:absolute;opacity:0;width:1px;height:1px">
+      <div class="err" id="shotErr"></div>
+      <button type="button" class="linkbtn" id="tutBtn" aria-expanded="false" aria-controls="tutorial">❓ How to get screenshot</button>
+      <div id="tutorial" hidden>
+        <ol>
+          <li>Follow the streamer on TikTok, then open their profile page.</li>
+          <li>Make sure their name, their @username and the <b>Following</b> button are all visible.</li>
+          <li>Take a screenshot. Don't crop, edit or filter it. The follower and like numbers can be anything.</li>
+        </ol>
+        <div class="shots">
+          <img src="images/profile-example.jpg" alt="Example of a streamer profile with the Following button" loading="lazy" style="grid-column:1/-1;background:#fff">
+        </div>
+      </div>
+      </div>
+    </div>
+    <div class="terms">
+      <label class="chk"><input type="checkbox" id="terms"><span>I have read and agree to the <button type="button" class="linkbtn" id="termsBtn" aria-haspopup="dialog" aria-controls="termsDlg">Terms and Conditions</button>.</span></label>
+      <div class="err" id="termsErr"></div>
+    </div>
+    <div id="progress" hidden>
+      <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i id="fill"></i></div>
+      <p id="status" aria-live="polite"></p>
+    </div>
+    <div id="result" role="status" aria-live="polite" hidden></div>
+    <div id="manual" hidden>
+      <p><b>The automatic scan didn't pass.</b> If your screenshot is real, send it to the host for a quick manual check.</p>
+      <div>
+        <label for="note">Note for the host (optional)</label>
+        <textarea id="note" maxlength="300" rows="2" placeholder="e.g. My screenshot is real, the scan just misread it"></textarea>
+      </div>
+      <button type="button" id="manualBtn">Send for manual review</button>
+      <p class="small">Your screenshot is only uploaded if you tap this button, and it is deleted once the host decides.</p>
+    </div>
+    <div id="appStatus" role="status" aria-live="polite" hidden></div>
+    <div id="wheelNote" role="status" aria-live="polite" hidden>Taking you to the wheel in <span id="wheelSecs">3</span>s. <a href="/wheel">Go now</a></div>
+    <button type="submit" id="go">Scan and enter the wheel</button>
+  </form>
+
+  <section id="paneEnter" hidden>
+    <form id="enterForm" novalidate>
+      <div id="wayName">
+        <label for="eName">Display name</label>
+        <input type="text" id="eName" autocomplete="off" maxlength="24" placeholder="Your registered in-game name">
+        <label for="eUid" style="margin-top:12px">Mobile Legends User ID</label>
+        <input type="text" id="eUid" inputmode="numeric" autocomplete="off" maxlength="12" placeholder="User ID">
+        <div id="needSid" hidden style="margin-top:12px">
+          <label for="eSidName">Server ID</label>
+          <input type="text" id="eSidName" inputmode="numeric" autocomplete="off" maxlength="6" placeholder="More than one account matches, add your Server ID">
+        </div>
+      </div>
+      <div id="wayIds" hidden>
+        <span class="lbl">Mobile Legends ID</span>
+        <div class="idrow">
+          <input type="text" id="fUid" inputmode="numeric" autocomplete="off" maxlength="12" placeholder="User ID" aria-label="User ID">
+          <input type="text" id="fSid" inputmode="numeric" autocomplete="off" maxlength="6" placeholder="Server ID" aria-label="Server ID">
+        </div>
+        <label for="fTt" style="margin-top:12px">TikTok @username</label>
+        <div class="atwrap"><span class="at" aria-hidden="true">@</span><input type="text" id="fTt" autocomplete="off" autocapitalize="off" maxlength="25" placeholder="the one you registered with"></div>
+      </div>
+      <button type="button" class="linkbtn" id="swapWay">Forgot your display name? Use your IDs instead</button>
+      <div id="enterResult" role="status" aria-live="polite" hidden></div>
+      <button type="submit" id="enterGo">Enter the giveaway</button>
+    </form>
+
+    <div id="enterDone" hidden>
+      <div id="doneMsg" class="streamer"></div>
+      <div class="renamebox">
+        <label for="newName">Changed your in-game name?</label>
+        <input type="text" id="newName" autocomplete="off" maxlength="24" placeholder="New display name">
+        <button type="button" id="renameGo">Send name change request</button>
+        <div id="renameStatus" class="small" role="status" aria-live="polite"></div>
+        <div id="ttStatus" class="small" role="status" aria-live="polite"></div>
+      </div>
+      <button type="button" class="linkbtn" id="notYou" style="margin-top:12px">Not you? Start over</button>
+    </div>
+  </section>
+</main>
+<button type="button" id="botFab" aria-label="Chat with the TikSpin helper" aria-expanded="false" aria-controls="botPanel">💬</button>
+<section id="botPanel" role="dialog" aria-label="TikSpin helper" hidden>
+  <div id="botHead"><img src="images/logo.png" alt="" width="34" height="34"><b id="botName">TikSpin Helper</b><button type="button" id="botClose" aria-label="Close helper">✕</button></div>
+  <div id="botLog" aria-live="polite"></div>
+  <div id="botChips"></div>
+  <form id="botForm" autocomplete="off"><input type="text" id="botInput" maxlength="300" placeholder="Ask a question..." aria-label="Your question"><button type="submit" id="botSend">Send</button></form>
+</section>
+<div id="termsDlg" class="dlgback" hidden>
+  <div class="dlgbox" role="dialog" aria-modal="true" aria-labelledby="termsTitle">
+    <h2 id="termsTitle">Terms and Conditions</h2>
+    <p class="upd">TikSpin VIP &middot; Last updated October 26, 2026</p>
+    <div class="termsbody" id="termsBody" tabindex="0">
+      <h3>1. About TikSpin VIP</h3>
+      <p>TikSpin VIP is a free tool that lets TikTok streamers (the &ldquo;host&rdquo;) collect entries and pick giveaway winners with a random wheel. We only run the draw. We do not run, fund or sponsor the giveaways themselves.</p>
+
+      <h3>2. Prizes</h3>
+      <p>The host decides what the prize is, who provides it, and how and when it is delivered. TikSpin VIP does not hold, buy, deliver or guarantee any prize and is not responsible if a prize is not delivered. Prizes have no cash value and cannot be swapped unless the host says so. Questions about a prize go to the host.</p>
+
+      <h3>3. Who can enter</h3>
+      <ul>
+        <li>You must own the Mobile Legends: Bang Bang account you register, and register it only once.</li>
+        <li>One person, one account. Using several accounts, or entering for someone else, is not allowed.</li>
+        <li>You must be old enough to use TikTok and Mobile Legends where you live. If you are a minor, ask a parent or guardian first.</li>
+        <li>You must follow the host on TikTok when you register.</li>
+      </ul>
+
+      <h3>4. Honest entries</h3>
+      <p>Give true details: your in-game name, User ID, Server ID and TikTok username. Do not edit, fake or reuse screenshots, and do not use tricks to get extra entries. Entries that break these rules can be disqualified and accounts can be banned permanently, without warning.</p>
+
+      <h3>5. How winners are picked</h3>
+      <p>The wheel picks at random from the players on it. The host controls who is on the wheel and starts each spin. The host&rsquo;s decisions about entries, disqualifications and results are final.</p>
+
+      <h3>6. If you win</h3>
+      <p>The host will contact you through your TikTok username and may use the Mobile Legends User ID and Server ID you registered to deliver the prize. The host decides how long you have to respond. If you do not respond in time, the prize may go to someone else. If your details are wrong, the prize may not be deliverable.</p>
+
+      <h3>7. Your display name</h3>
+      <p>Your display name appears on the wheel and may be shown on the host&rsquo;s stream. To change it, send a request from the Enter tab. The host approves or declines it.</p>
+
+      <h3>8. Your data</h3>
+      <ul>
+        <li>We store your in-game name, Mobile Legends User ID and Server ID, and TikTok username.</li>
+        <li>We also create a device identifier from your IP address and browser details. It is a code calculated from them, and we do not keep your IP address itself. It is still treated as personal data. We use it to detect duplicate or abusive entries and to limit repeated wrong sign-in tries.</li>
+        <li>Your TikTok follow screenshot is read on your own device. It is only sent to us if you ask for a manual review, and it is removed once the host decides.</li>
+        <li>Only your display name is shown on the wheel. Everything else is visible only to the host and the platform operator, and is used to run giveaways and let you enter again later.</li>
+        <li>We do not sell your data.</li>
+        <li>To have your data corrected or deleted, email <a href="mailto:tikspin.vip@gmail.com">tikspin.vip@gmail.com</a>. If your record is deleted, you will need to register again to enter.</li>
+      </ul>
+
+      <h3>9. Not affiliated</h3>
+      <p>TikSpin VIP is not affiliated with, endorsed by or sponsored by Moonton, Mobile Legends: Bang Bang, TikTok or ByteDance. Those names belong to their owners.</p>
+
+      <h3>10. Limits</h3>
+      <p>The platform is provided &ldquo;as is&rdquo;. To the extent the law allows, we are not responsible for downtime, lost or missed entries, or prizes that are not delivered.</p>
+
+      <h3>11. Changes and contact</h3>
+      <p>We may update these terms. The version shown when you register applies to you, and using the platform means you accept it. Questions or requests: <a href="mailto:tikspin.vip@gmail.com">tikspin.vip@gmail.com</a>.</p>
+    </div>
+    <div class="dlgbtns"><button type="button" id="termsClose">Close</button><button type="button" id="termsAgree" class="alt">I agree</button></div>
+  </div>
+</div>
+<div id="dlg" class="dlgback" hidden>
+  <div class="dlgbox" role="dialog" aria-modal="true" aria-labelledby="dlgTitle">
+    <h2 id="dlgTitle">You're already registered</h2>
+    <p id="dlgText">This Mobile Legends account is already in the system. You don't need to register again.</p>
+    <div class="dlgbtns"><button type="button" id="dlgEnter" class="alt">Go to Enter tab</button><button type="button" id="dlgClose">Close</button></div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js"></script>
+<script>
+(function () {
+  var streamer = { name: 'Hastelicous', username: 'mshuxley25' };
+  var MAX_BYTES = 10 * 1024 * 1024;
+  var $ = function (id) { return document.getElementById(id); };
+  var form = $('form'), fileInput = $('shot'), go = $('go'), result = $('result');
+  var progressBox = $('progress'), fill = $('fill'), statusEl = $('status');
+
+  $('tutBtn').addEventListener('click', function () {
+    var box = $('tutorial');
+    var open = box.hidden;
+    box.hidden = !open;
+    this.setAttribute('aria-expanded', String(open));
+  });
+
+  function renderStreamer() {
+    var t = $('streamerText');
+    while (t.firstChild) t.removeChild(t.firstChild);
+    t.appendChild(document.createTextNode('Follow '));
+    var b = document.createElement('b'); b.textContent = streamer.name; t.appendChild(b);
+    t.appendChild(document.createTextNode(' ('));
+    var a = document.createElement('a');
+    a.href = 'https://www.tiktok.com/@' + encodeURIComponent(streamer.username);
+    a.target = '_blank'; a.rel = 'noopener'; a.textContent = '@' + streamer.username;
+    t.appendChild(a);
+    t.appendChild(document.createTextNode(') on TikTok first, then screenshot their profile.'));
+  }
+  renderStreamer();
+
+  function showDialog(mode) {
+    var reg = mode === 'registered';
+    $('dlgTitle').textContent = reg ? "You're already registered" : "You're registered!";
+    $('dlgText').textContent = reg
+      ? "This Mobile Legends account is already in the system, so you don't need to register again. Use the Enter tab to join the giveaway."
+      : "You're registered and on the wheel. Next time, use the Enter tab with your display name and User ID.";
+    $('dlgEnter').hidden = !reg;
+    $('dlg').hidden = false;
+    (reg ? $('dlgEnter') : $('dlgClose')).focus();
+  }
+  $('dlgClose').addEventListener('click', function () { $('dlg').hidden = true; });
+  $('dlgEnter').addEventListener('click', function () { $('dlg').hidden = true; showTab('enter'); });
+
+  var retry = null;
+  fetch('/api/registration', { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (d) {
+    if (d && d.ok && d.streamer && d.streamer.name && d.streamer.username) { streamer = d.streamer; renderStreamer(); }
+    if (d && d.ok && !d.open) {
+      $('closedNote').hidden = false;
+      go.disabled = true;
+      go.textContent = 'Registration closed';
+      $('enterGo').disabled = true; $('enterGo').textContent = 'Registration closed';
+    } else if (d && d.ok && d.selfEnter === false) {
+      $('enterGo').disabled = true; $('enterGo').textContent = 'Host is adding players';
+      showEnterResult(false, 'The host is adding players manually for this giveaway.');
+    }
+  }).catch(function () {});
+
+  fileInput.addEventListener('change', function () {
+    retry = null;
+    $('manual').hidden = true;
+    var f = fileInput.files && fileInput.files[0];
+    $('fileName').textContent = f ? f.name : 'Choose a screenshot (PNG, JPG or WebP, up to 10 MB)';
+    $('shotErr').textContent = '';
+  });
+
+  function setProgress(pct, text) {
+    progressBox.hidden = false;
+    fill.style.width = pct + '%';
+    fill.parentNode.setAttribute('aria-valuenow', String(Math.round(pct)));
+    statusEl.textContent = text;
+  }
+
+  function showResult(ok, text) {
+    result.hidden = false;
+    result.className = ok ? 'good' : 'bad';
+    result.textContent = text;
+  }
+
+  function checkIgn() {
+    var v = $('ign').value.replace(/\s+/g, ' ').trim();
+    var ok = v.length >= 3 && v.length <= 24 && !/[<>]/.test(v);
+    $('ign').classList.toggle('invalid', !ok);
+    $('ignErr').textContent = ok ? '' : 'Enter your in-game name (3-24 characters).';
+    return ok;
+  }
+
+  function checkIds() {
+    var u = $('uid').value.trim(), v = $('sid').value.trim();
+    var okU = /^\d{5,12}$/.test(u), okS = /^\d{3,6}$/.test(v);
+    $('uid').classList.toggle('invalid', !okU);
+    $('sid').classList.toggle('invalid', !okS);
+    $('idErr').textContent = okU && okS ? '' : !okU ? 'User ID: 5-12 digits, numbers only.' : 'Server ID: 3-6 digits, numbers only.';
+    return okU && okS;
+  }
+
+  function checkTt() {
+    var v = $('tt').value.trim().replace(/^@/, '');
+    var ok = /^[a-zA-Z0-9_.]{2,24}$/.test(v);
+    $('tt').classList.toggle('invalid', !ok);
+    $('ttErr').textContent = ok ? '' : 'Use 2-24 letters, numbers, dots or underscores.';
+    return ok;
+  }
+  $('tt').addEventListener('input', checkTt);
+  $('ign').addEventListener('input', checkIgn);
+  ['uid', 'sid'].forEach(function (id) {
+    $(id).addEventListener('input', function () { this.value = this.value.replace(/\D/g, ''); checkIds(); });
+  });
+  $('terms').addEventListener('change', function () { if (this.checked) $('termsErr').textContent = ''; });
+  function openTerms() { $('termsDlg').hidden = false; $('termsBody').scrollTop = 0; $('termsAgree').focus(); }
+  function closeTerms() { $('termsDlg').hidden = true; $('termsBtn').focus(); }
+  $('termsBtn').addEventListener('click', function (e) { e.preventDefault(); openTerms(); });
+  $('termsClose').addEventListener('click', closeTerms);
+  $('termsAgree').addEventListener('click', function () { $('terms').checked = true; $('termsErr').textContent = ''; closeTerms(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !$('termsDlg').hidden) closeTerms(); });
+
+  function bytesToText(buf) {
+    var bytes = new Uint8Array(buf);
+    var limit = Math.min(bytes.length, 6 * 1024 * 1024);
+    var out = '';
+    for (var i = 0; i < limit; i += 32768) {
+      out += String.fromCharCode.apply(null, bytes.subarray(i, Math.min(i + 32768, limit)));
+    }
+    return out;
+  }
+
+  function inspectImage(buf) {
+    var b = new Uint8Array(buf.slice(0, 12));
+    var png = b[0] === 0x89 && b[1] === 0x50 && b[2] === 0x4e && b[3] === 0x47;
+    var jpg = b[0] === 0xff && b[1] === 0xd8;
+    var webp = b[0] === 0x52 && b[1] === 0x49 && b[2] === 0x46 && b[3] === 0x46 && b[8] === 0x57 && b[9] === 0x45;
+    if (!png && !jpg && !webp) return { blocked: true, reason: 'That file is not a valid PNG, JPG or WebP image.' };
+    var raw = bytesToText(buf);
+    var low = raw.toLowerCase();
+    var hasC2pa = low.indexOf('c2pa') !== -1 || low.indexOf('jumbf') !== -1 || low.indexOf('contentcredentials') !== -1 || raw.indexOf('caBX') !== -1;
+    var ai = /trainedalgorithmicmedia|algorithmicmedia|midjourney|dall[-\s]?e|openai|firefly|stable[\s-]?diffusion|stability\.ai|synthid|leonardo\.ai|imagen|chatgpt/.test(low);
+    if (ai || (hasC2pa && /generative|ai[-\s]?generated|generator/.test(low))) {
+      return { blocked: true, reason: 'This image carries AI-generation credentials. Upload a real, unedited screenshot.' };
+    }
+    if (/adobe photoshop\s*(cc|cs|\d)|creatortool[^a-z]{1,8}adobe photoshop/i.test(raw)) {
+      return { blocked: true, reason: 'This image was edited in Photoshop. Upload an unedited screenshot.' };
+    }
+    return { blocked: false };
+  }
+
+  function collectLines(data) {
+    if (data.lines && data.lines.length) return data.lines.map(function (l) { return l.words || []; });
+    var out = [];
+    (data.blocks || []).forEach(function (bl) {
+      (bl.paragraphs || []).forEach(function (p) {
+        (p.lines || []).forEach(function (l) { out.push(l.words || []); });
+      });
+    });
+    return out;
+  }
+
+  function fontBoundaryFlag(lines) {
+    var total = 0, bad = 0;
+    lines.forEach(function (words) {
+      var w = words.filter(function (x) { return x.bbox && x.text && x.text.trim().length > 1 && x.confidence > 40; });
+      if (w.length < 3) return;
+      var heights = w.map(function (x) { return x.bbox.y1 - x.bbox.y0; }).sort(function (a, b) { return a - b; });
+      var med = heights[heights.length >> 1] || 1;
+      var centers = w.map(function (x) { return (x.bbox.y0 + x.bbox.y1) / 2; }).sort(function (a, b) { return a - b; });
+      var cm = centers[centers.length >> 1];
+      w.forEach(function (x) {
+        total++;
+        var h = x.bbox.y1 - x.bbox.y0;
+        var c = (x.bbox.y0 + x.bbox.y1) / 2;
+        if (Math.abs(h - med) / med > 0.6 || Math.abs(c - cm) > med * 0.7) bad++;
+      });
+    });
+    return total >= 8 && bad / total > 0.3;
+  }
+
+  function lev(a, b) {
+    var prev = [], cur = [], i, j;
+    for (j = 0; j <= b.length; j++) prev[j] = j;
+    for (i = 1; i <= a.length; i++) {
+      cur = [i];
+      for (j = 1; j <= b.length; j++) {
+        cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+      }
+      prev = cur;
+    }
+    return prev[b.length];
+  }
+
+  function fuzzyHas(text, target, maxDist) {
+    var hay = String(text).toLowerCase().replace(/[^a-z0-9]/g, '');
+    var t = String(target).toLowerCase().replace(/[^a-z0-9]/g, '');
+    if (!t) return false;
+    if (hay.indexOf(t) !== -1) return true;
+    if (maxDist < 1 || t.length < 7) return false;
+    for (var i = 0; i < hay.length; i++) {
+      for (var d = -maxDist; d <= maxDist; d++) {
+        var len = t.length + d;
+        if (len > 0 && i + len <= hay.length && lev(hay.substr(i, len), t) <= maxDist) return true;
+      }
+    }
+    return false;
+  }
+
+  // The grey stat labels (Following / Followers / Likes) are low contrast and often missed by OCR, so they are
+  // not relied on. The reliable signal is the button row: when you follow someone it reads "Message  Following".
+  // When you do not follow, that button says "Follow" instead. Mutual follows show "Friends".
+  function isFol(t) { return t.length >= 7 && t.length <= 11 && (t.indexOf('followin') === 0 || lev(t, 'following') <= 2); }
+  function followState(text) {
+    var tokens = String(text).toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);
+    var count = tokens.filter(isFol).length;
+    var friends = tokens.some(function (t) { return t === 'friends' || (t.length >= 6 && lev(t, 'friends') <= 1); });
+    var button = false;
+    tokens.forEach(function (t, i) {
+      if (!(t.length >= 6 && t.length <= 8 && lev(t, 'message') <= 1)) return;
+      for (var j = i + 1; j <= i + 3 && j < tokens.length; j++) if (isFol(tokens[j])) button = true;
+    });
+    return { count: count, following: button || count >= 2 || (count >= 1 && friends) };
+  }
+
+  function evaluate(text) {
+    var nameOk = fuzzyHas(text, streamer.name, 1);
+    var userOk = fuzzyHas(text, streamer.username, streamer.username.length >= 10 ? 2 : 1);
+    var f = followState(text);
+    return {
+      nameOk: nameOk, userOk: userOk, count: f.count, following: f.following,
+      score: (nameOk ? 1 : 0) + (userOk ? 1 : 0) + Math.min(f.count, 2),
+      pass: nameOk && userOk && f.following
+    };
+  }
+
+  function explain(ev) {
+    if (!ev.nameOk) return 'We could not find the streamer name "' + streamer.name + '" in your screenshot. Screenshot their profile page.';
+    if (!ev.userOk) return 'We could not find the username @' + streamer.username + ' in your screenshot.';
+    if (ev.count >= 1) return 'Your screenshot shows a Follow button, not Following. Follow the streamer first, then take a new screenshot.';
+    return 'We could not find the word "Following" in your screenshot. Make sure the whole profile header is visible.';
+  }
+
+  function cleanText(t) {
+    return String(t || '').toLowerCase().replace(/[^a-z0-9\s.:+\-]/g, ' ').replace(/\s+/g, ' ').trim();
+  }
+
+  // Preprocess for OCR: optional top crop (the profile header lives there), grayscale or blue channel,
+  // auto-invert dark mode screenshots, then stretch contrast.
+  async function prepareImage(blob, opt) {
+    if (opt.raw) return blob;
+    var bmp = await createImageBitmap(blob);
+    var srcH = Math.max(1, Math.round(bmp.height * (opt.crop || 1)));
+    var scale = Math.min(3, Math.max(1, 1800 / bmp.width));
+    var c = document.createElement('canvas');
+    c.width = Math.round(bmp.width * scale);
+    c.height = Math.round(srcH * scale);
+    var x = c.getContext('2d', { willReadFrequently: true });
+    x.imageSmoothingQuality = 'high';
+    x.drawImage(bmp, 0, 0, bmp.width, srcH, 0, 0, c.width, c.height);
+    if (bmp.close) bmp.close();
+    var img = x.getImageData(0, 0, c.width, c.height), d = img.data, n = d.length / 4;
+    var vals = new Uint8Array(n), sum = 0, lo = 255, hi = 0, i, v;
+    for (i = 0; i < n; i++) {
+      v = opt.ch === 'blue' ? d[i * 4 + 2] : 0.299 * d[i * 4] + 0.587 * d[i * 4 + 1] + 0.114 * d[i * 4 + 2];
+      vals[i] = v; sum += v;
+      if (v < lo) lo = v;
+      if (v > hi) hi = v;
+    }
+    var invert = sum / n < 110, range = Math.max(1, hi - lo);
+    for (i = 0; i < n; i++) {
+      v = (vals[i] - lo) * 255 / range;
+      if (invert) v = 255 - v;
+      d[i * 4] = d[i * 4 + 1] = d[i * 4 + 2] = v;
+    }
+    x.putImageData(img, 0, 0);
+    var out = await new Promise(function (r) { c.toBlob(r, 'image/png'); });
+    c.width = 1; c.height = 1;
+    return out;
+  }
+
+  function scanFail(msg) { var e = new Error(msg); e.manual = true; return e; }
+
+  function clearFile() {
+    fileInput.value = '';
+    $('fileName').textContent = 'Choose a screenshot (PNG, JPG or WebP, up to 10 MB)';
+  }
+
+  async function compressForReview(file) {
+    var bmp = await createImageBitmap(file);
+    var attempts = [[900, 0.6], [700, 0.5], [560, 0.45], [420, 0.4]];
+    for (var a = 0; a < attempts.length; a++) {
+      var w = Math.min(bmp.width, attempts[a][0]);
+      var h = Math.max(1, Math.round(bmp.height * w / bmp.width));
+      var c = document.createElement('canvas');
+      c.width = w; c.height = h;
+      var x = c.getContext('2d');
+      x.fillStyle = '#ffffff'; x.fillRect(0, 0, w, h);
+      x.drawImage(bmp, 0, 0, w, h);
+      var url = c.toDataURL('image/jpeg', attempts[a][1]);
+      c.width = 1; c.height = 1;
+      if (url.length <= 440000) { if (bmp.close) bmp.close(); return url; }
+    }
+    if (bmp.close) bmp.close();
+    throw new Error('That screenshot is too large to send. Try a smaller one.');
+  }
+
+  var wheelTimer = null;
+  function goToWheel() {
+    if (wheelTimer) return;
+    var n = 3;
+    $('wheelSecs').textContent = String(n);
+    $('wheelNote').hidden = false;
+    wheelTimer = setInterval(function () {
+      n--;
+      if (n <= 0) { clearInterval(wheelTimer); window.location.href = '/wheel'; return; }
+      $('wheelSecs').textContent = String(n);
+    }, 1000);
+  }
+
+  function showAppStatus(text, bad) {
+    var box = $('appStatus');
+    box.hidden = false;
+    box.className = bad ? 'bad' : '';
+    box.textContent = text;
+  }
+
+  function watchApplication(id, key) {
+    var tries = 0;
+    showAppStatus('Sent. Waiting for the host to approve your entry. Keep this page open.', false);
+    var timer = setInterval(async function () {
+      tries++;
+      if (tries > 450) { clearInterval(timer); return; }
+      try {
+        var res = await fetch('/api/apply-status?id=' + encodeURIComponent(id) + '&key=' + encodeURIComponent(key), { cache: 'no-store' });
+        var out = await res.json();
+        if (!out.ok || out.status === 'pending') return;
+        clearInterval(timer);
+        if (out.status === 'accepted') { showAppStatus("You're approved and registered.", false); showDialog('new'); }
+        else if (out.status === 'rejected') showAppStatus('The host did not approve this entry.' + (out.reason ? ' Reason: ' + out.reason : ''), true);
+        else showAppStatus('Your application was removed by the host.', true);
+      } catch (_) {}
+    }, 4000);
+  }
+
+  $('manualBtn').addEventListener('click', async function () {
+    if (!retry) return;
+    var btn = this;
+    btn.disabled = true;
+    try {
+      setProgress(50, 'Preparing your screenshot...');
+      var shot = await compressForReview(retry.file);
+      setProgress(80, 'Sending to the host...');
+      var res = await fetch('/api/apply', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          ign: retry.ign, userId: retry.userId, serverId: retry.serverId, tiktok: retry.tiktok, terms: true,
+          note: $('note').value.trim(), reason: retry.reason, ocrText: String(retry.ocr || '').slice(0, 600), screenshot: shot
+        })
+      });
+      var out = {};
+      try { out = await res.json(); } catch (_) {}
+      if (out && out.code === 'registered') {
+        progressBox.hidden = true;
+        showDialog('registered');
+        return;
+      }
+      if (!res.ok || !out.ok) throw new Error(out.error || 'Could not send your application. Try again.');
+      progressBox.hidden = true;
+      $('manual').hidden = true;
+      result.hidden = true;
+      retry = null;
+      clearFile();
+      watchApplication(out.id, out.key);
+    } catch (err) {
+      progressBox.hidden = true;
+      showResult(false, err && err.message ? err.message : 'Could not send your application. Try again.');
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault();
+    result.hidden = true;
+    $('manual').hidden = true;
+    $('appStatus').hidden = true;
+    retry = null;
+    var okR = checkIgn();
+    var okT = checkIds() & checkTt();
+    var okTerms = $('terms').checked;
+    $('termsErr').textContent = okTerms ? '' : 'Please accept the Terms and Conditions to continue.';
+    var file = fileInput.files && fileInput.files[0];
+    if (!file) $('shotErr').textContent = 'Choose a screenshot first.';
+    else if (file.size > MAX_BYTES) { $('shotErr').textContent = 'That file is over 10 MB.'; file = null; }
+    if (!okR || !okT || !okTerms || !file) return;
+
+    var tiktok = $('tt').value.trim().replace(/^@/, ''), ign = $('ign').value.replace(/\s+/g, ' ').trim(), userId = $('uid').value.trim(), serverId = $('sid').value.trim();
+    var buf = null, blob = null, tokens = '', keepFile = false, worker = null;
+    go.disabled = true;
+    try {
+      setProgress(3, 'Checking your registration...');
+      try {
+        var chk = await (await fetch('/api/player-check', {
+          method: 'POST', headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ userId: userId, serverId: serverId })
+        })).json();
+        if (chk && chk.ok && chk.registered) {
+          progressBox.hidden = true;
+          showDialog('registered');
+          return;
+        }
+      } catch (_) {}
+      setProgress(5, 'Reading your screenshot in memory...');
+      buf = await file.arrayBuffer();
+
+      setProgress(15, 'Checking image credentials...');
+      var verdict = inspectImage(buf);
+      if (verdict.blocked) throw scanFail(verdict.reason);
+
+      if (typeof Tesseract === 'undefined') throw scanFail('The text scanner failed to load. You can send your screenshot for manual review.');
+      setProgress(22, 'Starting the text scanner...');
+      blob = new Blob([buf], { type: file.type || 'image/png' });
+      var passes = [
+        { crop: 0.5, ch: 'gray', psm: '11' },
+        { crop: 1, ch: 'gray', psm: '11' },
+        { crop: 0.5, ch: 'blue', psm: '6' },
+        { raw: true, psm: '3' }
+      ];
+      var curPass = 0, firstLines = [], best = null;
+      worker = await Tesseract.createWorker('eng', 1, {
+        logger: function (m) {
+          if (m.status === 'recognizing text') {
+            setProgress(25 + ((curPass + m.progress) / passes.length) * 60, 'Reading the profile text: pass ' + (curPass + 1) + ' of up to ' + passes.length);
+          }
+        }
+      });
+      for (curPass = 0; curPass < passes.length; curPass++) {
+        await worker.setParameters({ tessedit_pageseg_mode: passes[curPass].psm });
+        var input = await prepareImage(blob, passes[curPass]);
+        var data = (await worker.recognize(input)).data;
+        input = null;
+        var cleaned = cleanText(data.text || '');
+        var ev = evaluate(cleaned);
+        // Each pass is judged on its own, so the two "Following" words can never be double counted across passes.
+        if (!best || ev.score > best.ev.score) best = { ev: ev, text: cleaned.slice(0, 1900) };
+        if (curPass === 0) firstLines = collectLines(data);
+        if (ev.pass) break;
+      }
+      tokens = best ? best.text : '';
+
+      setProgress(88, 'Checking text consistency...');
+      if (fontBoundaryFlag(firstLines)) throw scanFail('The text in this screenshot looks edited. If it is real, send it for manual review.');
+
+      if (!best || !best.ev.pass) throw scanFail(explain(best ? best.ev : evaluate('')));
+
+      setProgress(94, 'Sending your entry...');
+      var res = await fetch('/api/submit', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ ign: ign, userId: userId, serverId: serverId, tiktok: tiktok, terms: true, ocrText: tokens })
+      });
+      var out = {};
+      try { out = await res.json(); } catch (_) {}
+      if (out && out.code === 'registered') {
+        progressBox.hidden = true;
+        showDialog('registered');
+        return;
+      }
+      if (!res.ok || !out.ok) {
+        var msg = out.error || 'Something went wrong. Try again.';
+        throw (out.code === 'streamer' || out.code === 'follow') ? scanFail(msg) : new Error(msg);
+      }
+      setProgress(100, 'Done.');
+      showResult(true, out.message || 'You are registered.');
+      form.reset();
+      showDialog('new');
+    } catch (err) {
+      progressBox.hidden = true;
+      var text = err && err.message ? err.message : 'Something went wrong. Try again.';
+      showResult(false, text);
+      if (err && err.manual) {
+        retry = { file: file, ign: ign, userId: userId, serverId: serverId, tiktok: tiktok, reason: text, ocr: tokens };
+        keepFile = true;
+        $('manual').hidden = false;
+      }
+    } finally {
+      buf = null; blob = null;
+      if (worker) { try { worker.terminate(); } catch (_) {} }
+      if (!keepFile) clearFile();
+      go.disabled = false;
+    }
+  });
+
+  // ---------- Tabs + Enter (returning players) ----------
+  function showTab(which) {
+    var reg = which === 'reg';
+    $('tabReg').classList.toggle('on', reg);
+    $('tabEnter').classList.toggle('on', !reg);
+    $('tabReg').setAttribute('aria-selected', String(reg));
+    $('tabEnter').setAttribute('aria-selected', String(!reg));
+    $('form').hidden = !reg;
+    $('streamerBox').hidden = !reg;
+    $('paneEnter').hidden = reg;
+  }
+  $('tabReg').addEventListener('click', function () { showTab('reg'); });
+  $('tabEnter').addEventListener('click', function () { showTab('enter'); });
+
+  var way = 'name', enterSession = null;
+  function setWay(w) {
+    way = w;
+    $('wayName').hidden = w !== 'name';
+    $('wayIds').hidden = w !== 'ids';
+    $('swapWay').textContent = w === 'name' ? 'Forgot your display name? Use your IDs instead' : 'Back to display name';
+    $('enterResult').hidden = true;
+  }
+  $('swapWay').addEventListener('click', function () { setWay(way === 'name' ? 'ids' : 'name'); });
+  ['eUid', 'eSidName', 'fUid', 'fSid'].forEach(function (id) {
+    $(id).addEventListener('input', function () { this.value = this.value.replace(/\D/g, ''); });
+  });
+
+  function showEnterResult(ok, text) {
+    var r = $('enterResult');
+    r.hidden = false;
+    r.className = ok ? 'good' : 'bad';
+    r.textContent = text;
+  }
+
+  function collectEnter() {
+    var uid, sid, name, tt;
+    if (way === 'name') {
+      name = $('eName').value.replace(/\s+/g, ' ').trim();
+      uid = $('eUid').value.trim();
+      sid = $('needSid').hidden ? '' : $('eSidName').value.trim();
+      if (name.length < 3) { showEnterResult(false, 'Enter your display name.'); return null; }
+      if (!/^\d{5,12}$/.test(uid)) { showEnterResult(false, 'Your User ID should be 5-12 digits.'); return null; }
+      if (!$('needSid').hidden && !/^\d{3,6}$/.test(sid)) { showEnterResult(false, 'Your Server ID should be 3-6 digits.'); return null; }
+      return { way: 'name', ign: name, userId: uid, serverId: sid };
+    }
+    uid = $('fUid').value.trim(); sid = $('fSid').value.trim(); tt = $('fTt').value.trim().replace(/^@/, '');
+    if (!/^\d{5,12}$/.test(uid)) { showEnterResult(false, 'Your User ID should be 5-12 digits.'); return null; }
+    if (!/^\d{3,6}$/.test(sid)) { showEnterResult(false, 'Your Server ID should be 3-6 digits.'); return null; }
+    if (!/^[a-zA-Z0-9_.]{2,24}$/.test(tt)) { showEnterResult(false, 'Enter the TikTok username you registered with.'); return null; }
+    return { way: 'ids', userId: uid, serverId: sid, tiktok: tt };
+  }
+
+  function renderRename(r) {
+    var st = $('renameStatus');
+    if (r && r.status === 'pending') st.textContent = 'Waiting for the host to review "' + r.new_name + '".';
+    else if (r && r.status === 'rejected') st.textContent = 'Your request for "' + r.new_name + '" was declined' + (r.reason ? ': ' + r.reason : '.');
+    else st.textContent = '';
+  }
+
+  function renderTtStatus(r) {
+    var st = $('ttStatus');
+    if (r && r.status === 'pending') st.textContent = 'TikTok @username change to @' + r.new_name + ': waiting for the host.';
+    else if (r && r.status === 'rejected') st.textContent = 'Your TikTok @username change to @' + r.new_name + ' was declined' + (r.reason ? ': ' + r.reason : '.');
+    else st.textContent = '';
+  }
+
+  $('enterForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    var body = collectEnter();
+    if (!body) return;
+    var btn = $('enterGo'), label = btn.textContent;
+    btn.disabled = true; btn.textContent = 'Checking...';
+    try {
+      var res = await fetch('/api/enter', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
+      var out = await res.json().catch(function () { return {}; });
+      if (out.code === 'need_server') { $('needSid').hidden = false; showEnterResult(false, out.error); return; }
+      if (!res.ok || !out.ok) { showEnterResult(false, out.error || 'Something went wrong. Try again.'); return; }
+      enterSession = body;
+      $('enterForm').hidden = true;
+      $('enterDone').hidden = false;
+      $('doneMsg').textContent = out.already
+        ? "You're already on the wheel as " + out.ign + '.'
+        : "You're in, " + out.ign + '! Watch the wheel on stream.';
+      renderRename(out.rename);
+      renderTtStatus(out.tiktok);
+    } catch (_) {
+      showEnterResult(false, 'Network problem. Try again.');
+    } finally {
+      if (!btn.dataset.keep) { btn.disabled = false; btn.textContent = label; }
+    }
+  });
+
+  $('renameGo').addEventListener('click', async function () {
+    var n = $('newName').value.replace(/\s+/g, ' ').trim(), st = $('renameStatus');
+    if (n.length < 3 || n.length > 24 || /[<>]/.test(n)) { st.textContent = 'Enter a display name of 3-24 characters.'; return; }
+    var b = this; b.disabled = true;
+    try {
+      var payload = Object.assign({ newName: n }, enterSession);
+      var res = await fetch('/api/rename-request', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(payload) });
+      var out = await res.json().catch(function () { return {}; });
+      if (!res.ok || !out.ok) { st.textContent = out.error || 'Could not send the request. Try again.'; return; }
+      $('newName').value = '';
+      renderRename(out.rename);
+    } catch (_) { st.textContent = 'Network problem. Try again.'; }
+    finally { b.disabled = false; }
+  });
+
+  $('notYou').addEventListener('click', function () {
+    enterSession = null;
+    $('enterDone').hidden = true;
+    $('enterForm').hidden = false;
+    $('enterResult').hidden = true;
+    $('renameStatus').textContent = '';
+    ['eName', 'eUid', 'eSidName', 'fUid', 'fSid', 'fTt', 'newName'].forEach(function (id) { $(id).value = ''; });
+    $('needSid').hidden = true;
+  });
+
+  // ---------- Helper bot ----------
+  // The page only displays what /api/bot returns and posts what the player types. Answers come from the server
+  // (llm.js + llm.json), and every request is checked again on the server, so nothing here is trusted.
+  var botStarted = false, botBusy = false;
+  var botLog = $('botLog'), botChips = $('botChips'), botInput = $('botInput'), botSend = $('botSend');
+
+  function botBubble(text, who) {
+    var d = document.createElement('div');
+    d.className = 'bmsg ' + who;
+    d.textContent = text;
+    botLog.appendChild(d);
+    botLog.scrollTop = botLog.scrollHeight;
+    return d;
+  }
+  function botSetChips(list) {
+    botChips.textContent = '';
+    (list || []).slice(0, 5).forEach(function (q) {
+      var b = document.createElement('button');
+      b.type = 'button'; b.textContent = q;
+      b.addEventListener('click', function () { botAsk(q); });
+      botChips.appendChild(b);
+    });
+    botLog.scrollTop = botLog.scrollHeight; // chips change the log height, keep the newest message in view
+  }
+  async function botCall(payload) {
+    var res = await fetch('/api/bot', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(payload) });
+    var out = await res.json().catch(function () { return {}; });
+    return { ok: res.ok && out.ok, out: out };
+  }
+  async function botOpen() {
+    $('botPanel').hidden = false;
+    $('botFab').setAttribute('aria-expanded', 'true');
+    if (!botStarted) {
+      botStarted = true;
+      try {
+        var r = await botCall({ init: true });
+        if (r.ok) { $('botName').textContent = r.out.name || 'TikSpin Helper'; botBubble(r.out.text, 'bot'); botSetChips(r.out.suggestions); }
+        else botBubble(r.out.error || 'The helper is not available right now.', 'note');
+      } catch (_) { botBubble('The helper could not load. Check your connection.', 'note'); }
+    }
+    botInput.focus();
+  }
+  function botClose() { $('botPanel').hidden = true; $('botFab').setAttribute('aria-expanded', 'false'); $('botFab').focus(); }
+  $('botFab').addEventListener('click', function () { if ($('botPanel').hidden) botOpen(); else botClose(); });
+  $('botClose').addEventListener('click', botClose);
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !$('botPanel').hidden && $('dlg').hidden && $('termsDlg').hidden) botClose(); });
+
+  async function botAsk(text) {
+    text = String(text || '').trim();
+    if (!text || botBusy) return;
+    botBusy = true; botSend.disabled = true;
+    botBubble(text, 'me'); botInput.value = ''; botChips.textContent = '';
+    try {
+      var r = await botCall({ message: text });
+      if (!r.ok) { botBubble(r.out.error || 'Something went wrong. Try again.', 'note'); botSetChips([]); return; }
+      botBubble(r.out.text, 'bot');
+      if (r.out.type === 'request' && r.out.kind) botRequestForm(r.out.kind);
+      botSetChips(r.out.suggestions);
+    } catch (_) {
+      botBubble('Network problem. Try again.', 'note');
+    } finally { botBusy = false; botSend.disabled = false; botInput.focus(); }
+  }
+  $('botForm').addEventListener('submit', function (e) { e.preventDefault(); botAsk(botInput.value); });
+
+  function el(tag, attrs, kids) {
+    var n = document.createElement(tag);
+    Object.keys(attrs || {}).forEach(function (k) { if (k === 'text') n.textContent = attrs[k]; else n.setAttribute(k, attrs[k]); });
+    (kids || []).forEach(function (c) { n.appendChild(c); });
+    return n;
+  }
+  var botFormN = 0;
+  function field(id, label, ph, extra) {
+    id = id + botFormN; // unique per form so two forms in one chat never share ids
+    var inp = el('input', Object.assign({ type: 'text', id: id, placeholder: ph, autocomplete: 'off', maxlength: '30' }, extra || {}));
+    return { wrap: el('div', {}, [el('label', { for: id, text: label }), inp]), input: inp };
+  }
+
+  // A request form inside the chat. If the player already signed in on the Enter tab we reuse that proof,
+  // otherwise they prove who they are here. The server checks the proof and the new value either way.
+  function botRequestForm(kind) {
+    botFormN++;
+    var isTt = kind === 'tiktok', way = 'name', needSid = false;
+    var box = el('div', { class: 'bform' });
+    var proof = el('div', { class: 'bproof' });
+    var useSession = !!enterSession;
+    var uidN = field('bqUid1', 'Mobile Legends User ID', 'User ID', { inputmode: 'numeric', maxlength: '12' });
+    var nameN = field('bqName', 'Your current display name', 'Registered in-game name', { maxlength: '24' });
+    var sidN = field('bqSid1', 'Server ID', 'Server ID', { inputmode: 'numeric', maxlength: '6' });
+    sidN.wrap.hidden = true;
+    var uidI = field('bqUid2', 'Mobile Legends User ID', 'User ID', { inputmode: 'numeric', maxlength: '12' });
+    var sidI = field('bqSid2', 'Server ID', 'Server ID', { inputmode: 'numeric', maxlength: '6' });
+    var ttI = field('bqTt', 'Your current TikTok @username', 'username');
+    var groupName = el('div', { class: 'bform' }, [nameN.wrap, uidN.wrap, sidN.wrap]);
+    var groupIds = el('div', { class: 'bform' }, [uidI.wrap, sidI.wrap, ttI.wrap]);
+    groupName.style.padding = '0'; groupName.style.border = '0'; groupIds.style.padding = '0'; groupIds.style.border = '0';
+    groupIds.hidden = true;
+    var swap = el('button', { type: 'button', class: 'linkbtn', text: 'Forgot your display name? Use your IDs instead' });
+    swap.addEventListener('click', function () {
+      way = way === 'name' ? 'ids' : 'name';
+      groupName.hidden = way !== 'name'; groupIds.hidden = way !== 'ids';
+      swap.textContent = way === 'name' ? 'Forgot your display name? Use your IDs instead' : 'Back to display name';
+    });
+    if (useSession) proof.appendChild(el('div', { class: 'bst', text: 'Using the details you entered on the Enter tab.' }));
+    else { proof.appendChild(el('div', { class: 'bt', text: 'First, prove it\u2019s you' })); proof.appendChild(groupName); proof.appendChild(groupIds); proof.appendChild(swap); }
+
+    var val = field('bqValue', isTt ? 'New TikTok @username' : 'New display name', isTt ? 'new username' : 'New in-game name', { maxlength: isTt ? '25' : '24' });
+    var status = el('div', { class: 'bst', role: 'status' });
+    var go = el('button', { type: 'submit', class: 'go', text: 'Send request to the host' });
+    var form = el('form', { class: 'bform', autocomplete: 'off' }, [proof, val.wrap, status, go]);
+    form.style.border = '0'; form.style.padding = '0'; form.style.background = 'transparent';
+    box.appendChild(form);
+    botLog.appendChild(box); botLog.scrollTop = botLog.scrollHeight;
+    [uidN.input, sidN.input, uidI.input, sidI.input].forEach(function (i) { i.addEventListener('input', function () { i.value = i.value.replace(/\D/g, ''); }); });
+
+    form.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      var creds;
+      if (useSession) creds = enterSession;
+      else if (way === 'name') creds = { way: 'name', ign: nameN.input.value, userId: uidN.input.value, serverId: needSid ? sidN.input.value : '' };
+      else creds = { way: 'ids', userId: uidI.input.value, serverId: sidI.input.value, tiktok: ttI.input.value };
+      go.disabled = true; status.className = 'bst'; status.textContent = 'Sending...';
+      try {
+        var res = await fetch('/api/rename-request', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(Object.assign({ kind: kind, value: val.input.value }, creds)) });
+        var out = await res.json().catch(function () { return {}; });
+        if (out.code === 'need_server') { needSid = true; sidN.wrap.hidden = false; }
+        if (!res.ok || !out.ok) { status.className = 'bst bad'; status.textContent = out.error || 'Could not send the request. Try again.'; go.disabled = false; return; }
+        status.className = 'bst good';
+        status.textContent = 'Sent! The host will review it. You can check the result on the Enter tab after you sign in.';
+        Array.prototype.forEach.call(form.querySelectorAll('input'), function (i) { i.disabled = true; });
+        swap.hidden = true;
+      } catch (_) { status.className = 'bst bad'; status.textContent = 'Network problem. Try again.'; go.disabled = false; }
+    });
+    var first = form.querySelector('input');
+    if (first) first.focus();
+  }
+})();
+</script>
+</body>
+</html>

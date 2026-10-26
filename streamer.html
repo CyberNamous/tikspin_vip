@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Streamer Panel</title>
+<link rel="icon" type="image/png" href="images/logo.png">
+<style>
+:root{--bg:#0d0a1c;--panel:#17122b;--line:#3a2a5e;--pink:#e58bff;--pink2:#d54bf0;--neon:#b43cf5;--text:#ffffff;--muted:#a99fcf;--green:#3ddc84;--red:#ff4d5e}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--text);font-family:"Avenir Next","Segoe UI",system-ui,sans-serif;min-height:100vh}
+[hidden]{display:none!important}
+.brandh{display:flex;align-items:center;gap:10px;margin:0}
+.brandh img{width:44px;height:44px;mix-blend-mode:screen;flex:none}
+.mlogo{display:block;margin:0 auto 6px;width:96px;height:auto;mix-blend-mode:screen}
+header.top{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;padding:16px 24px;border-bottom:1px solid var(--line);background:var(--panel)}
+h1{margin:0;font-size:1.5rem;font-weight:900;color:var(--pink2);text-shadow:0 0 20px rgba(180,60,245,.4)}
+h2{margin:0 0 6px;font-size:1.25rem}
+.meta{color:var(--muted);font-size:.92rem}
+main{padding:24px;display:grid;gap:22px;max-width:1500px;margin:0 auto}
+.twin{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px}
+.card.win{border-color:var(--pink);box-shadow:0 0 0 1px rgba(229,139,255,.25),0 10px 40px rgba(180,60,245,.12)}
+.card.elim{border-color:var(--neon)}
+.card p{color:var(--muted);line-height:1.5;margin:0 0 16px}
+button{font:inherit;font-weight:800;border-radius:10px;border:0;padding:12px 18px;cursor:pointer;color:#fff;background:#3a2a5e}
+button:hover{filter:brightness(1.15)}
+button:disabled{opacity:.5;cursor:progress}
+button:focus-visible,input:focus-visible{outline:2px solid var(--neon);outline-offset:2px}
+.big{width:100%;padding:18px;font-size:1.15rem;background:linear-gradient(135deg,var(--neon),var(--pink2));box-shadow:0 8px 28px rgba(180,60,245,.3)}
+.big.alt{background:linear-gradient(135deg,#4b1a8f,var(--neon))}
+.bellhot{border-color:var(--pink2)!important;color:#fff!important;box-shadow:0 0 12px rgba(224,64,200,.6)}
+#bellN{font-weight:900}
+.nreq{border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:8px;display:grid;gap:4px;background:#130f26}
+.nreq .act{display:flex;gap:8px;margin-top:6px;flex-wrap:wrap}
+.tid{font-family:ui-monospace,Menlo,monospace;font-weight:800;color:var(--pink);letter-spacing:.04em;white-space:nowrap}
+.sm{padding:6px 10px;font-size:.82rem;border-radius:8px}
+.danger{background:var(--red)}
+.ghost{background:transparent;border:1px solid var(--line);color:var(--text)}
+.bar{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+select{background:#0d0a1c;border:1.5px solid var(--line);border-radius:10px;color:var(--text);font:inherit;padding:10px 12px}
+tr.dup td{background:rgba(255,77,94,.14)}
+.devtag{font-family:ui-monospace,Menlo,monospace;color:var(--muted)}
+#rsn{position:fixed;inset:0;background:rgba(13,10,28,.88);display:flex;align-items:center;justify-content:center;padding:20px;z-index:15}
+#rsn .rbox{background:var(--panel);border:1px solid var(--red);border-radius:14px;padding:22px;width:100%;max-width:360px;display:grid;gap:10px}
+#rsn h2{color:var(--red)}
+#mig{position:fixed;inset:0;background:rgba(13,10,28,.88);display:flex;align-items:center;justify-content:center;padding:20px;z-index:15}
+#mig .rbox{background:var(--panel);border:1px solid var(--pink);border-radius:14px;padding:22px;width:100%;max-width:380px;display:grid;gap:10px}
+#mig h2{color:var(--pink2)}
+.savedrow{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap;border:1px solid var(--line);border-radius:12px;padding:12px;margin-top:10px;background:#130f26}
+input[type=text],input[type=password]{background:#0d0a1c;border:1.5px solid var(--line);border-radius:10px;color:var(--text);font:inherit;padding:10px 12px;min-width:0}
+.boards{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start}
+.board{border-radius:14px;border:1.5px solid;padding:16px;background:var(--panel);overflow:hidden}
+.board.good{border-color:var(--green)}
+.board.bad{border-color:var(--red)}
+.board h2{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.good h2{color:var(--green)}.bad h2{color:var(--red)}
+.scroll{overflow:auto;max-height:420px}
+table{width:100%;border-collapse:collapse;font-size:.92rem}
+th,td{text-align:left;padding:8px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+th{color:var(--muted);font-weight:700;position:sticky;top:0;background:var(--panel)}
+td.act{display:flex;gap:6px}
+.pill{border-radius:99px;padding:2px 10px;font-size:.8rem;font-weight:800;background:#3a2a5e}
+.pill.alive{background:rgba(61,220,132,.18);color:var(--green)}
+.pill.winner{background:rgba(180,60,245,.25);color:var(--pink)}
+.empty{color:var(--muted);padding:14px 4px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.chips span{background:#2a1015;color:var(--red);border-radius:99px;padding:3px 10px;font-size:.82rem;font-weight:700}
+#modal{position:fixed;inset:0;background:rgba(13,10,28,.96);display:flex;align-items:center;justify-content:center;padding:20px;z-index:10}
+#modal form{background:var(--panel);border:1px solid var(--neon);border-radius:14px;padding:26px;width:100%;max-width:380px;display:grid;gap:14px;box-shadow:0 0 50px rgba(180,60,245,.3)}
+#modal h2{color:var(--pink2)}
+#modalErr{color:var(--red);min-height:1.2em;font-size:.9rem}
+button.ok{background:#1f8f55}
+#wheelPreview{width:100%;height:480px;border:1px solid var(--line);border-radius:12px;background:#0d0a1c}
+.count{background:#130f26;border:1.5px solid var(--pink);border-radius:99px;padding:6px 14px;font-weight:900;color:var(--pink)}
+.wrap{display:flex;flex-wrap:wrap;gap:6px}
+.tokenbox{margin-top:14px;border:1.5px dashed var(--pink);border-radius:12px;padding:14px;display:grid;gap:8px;background:#130f26}
+.tokenbox code{font-size:1.4rem;font-weight:900;color:var(--pink);letter-spacing:.04em;overflow-wrap:anywhere}
+.tokenbox .link{color:var(--muted);font-size:.9rem;overflow-wrap:anywhere}
+.apps{border-color:var(--pink)}
+.apps h2{color:var(--pink2)}
+.appgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-top:12px}
+.appcard{background:#130f26;border:1px solid var(--line);border-radius:12px;padding:12px;display:grid;gap:8px;align-content:start}
+.appcard.isdup{border-color:var(--red)}
+.apphead{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:1.05rem}
+.badge{border-radius:99px;padding:2px 9px;font-size:.75rem;font-weight:800;background:#3a2a5e}
+.badge.warn{background:rgba(229,139,255,.2);color:var(--pink)}
+.badge.bad{background:rgba(255,77,94,.2);color:var(--red)}
+.shotimg{width:100%;min-height:80px;max-height:260px;object-fit:contain;border-radius:8px;background:#0d0a1c;border:1px solid var(--line)}
+.note{color:var(--text);font-style:italic}
+#toast{position:fixed;right:20px;bottom:20px;background:var(--panel);border:1px solid var(--pink);border-radius:10px;padding:12px 16px;font-weight:700;max-width:360px;z-index:20}
+#toast.err{border-color:var(--red);color:var(--red)}
+@media (max-width:900px){.twin,.boards{grid-template-columns:1fr}main{padding:14px}}
+</style>
+</head>
+<body>
+<div id="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+  <form id="authForm">
+    <img class="mlogo" src="images/logo.png" alt="TikSpin VIP" width="96" height="96">
+    <h2 id="mTitle">Streamer sign in</h2>
+    <div class="meta">Enter the streamer token to open the control panel.</div>
+    <input type="password" id="tokenInput" autocomplete="current-password" placeholder="Streamer token" required>
+    <div id="modalErr" aria-live="polite"></div>
+    <button class="big" type="submit">Unlock panel</button>
+  </form>
+</div>
+
+<div id="mig" role="dialog" aria-modal="true" aria-labelledby="migTitle" hidden>
+  <div class="rbox">
+    <h2 id="migTitle">Save current session</h2>
+    <div class="meta">The current entries are kept as a saved session. A new 24-hour session opens right away. Pending manual applications move with the entries.</div>
+    <button type="button" data-c="1">Save and carry the entries over</button>
+    <button type="button" data-c="0">Save and start empty</button>
+    <button type="button" class="ghost" id="migCancel">Cancel</button>
+  </div>
+</div>
+
+<div id="rsn" role="dialog" aria-modal="true" aria-labelledby="rsnTitle" hidden>
+  <div class="rbox">
+    <h2 id="rsnTitle">Disqualify <span id="rsnName"></span></h2>
+    <div class="meta">Pick a reason. They leave the wheel and are blocked from this giveaway only.</div>
+    <button type="button" data-r="multiple entries">Multiple entries</button>
+    <button type="button" data-r="fake screenshot">Fake screenshot</button>
+    <button type="button" data-r="other">Other</button>
+    <button type="button" class="ghost" id="rsnCancel">Cancel</button>
+  </div>
+</div>
+
+<div id="app" hidden>
+  <header class="top">
+    <h1 class="brandh"><img src="images/logo.png" alt="TikSpin VIP" width="44" height="44"> Wheel Control Panel</h1>
+    <div class="bar">
+      <button class="ghost" id="bell" type="button" aria-label="Notifications">🔔 <span id="bellN">0</span></button>
+      <span class="count" id="entryCount">👥 0 entered</span>
+      <span class="meta" id="cmdInfo"></span>
+      <button class="ghost" id="clearAlerts" type="button">Clear banner</button>
+    </div>
+  </header>
+  <main>
+    <section class="card" id="notifCard">
+      <h2>🔔 Notifications</h2>
+      <div id="notifBox"></div>
+    </section>
+
+    <section class="card">
+      <h2>🔁 Migrate Data</h2>
+      <p class="meta" style="margin:0 0 12px">Start a fresh session without losing the current one. It only works before the wheel has been spun. The current entries are kept as a saved session, and can be carried into the new session.</p>
+      <div class="bar"><button class="ok" id="migStart" type="button">Save current &amp; start new session</button></div>
+      <div id="savedBox" style="margin-top:14px"></div>
+    </section>
+
+    <section class="card">
+      <h2>💜 Streamer to follow</h2>
+      <p class="meta" style="margin:0 0 12px">Entrants must screenshot this TikTok profile while following it. Only the display name, the @username and the Following button are checked, so follower and like counts can change freely.</p>
+      <div class="bar">
+        <input type="text" id="stName" maxlength="40" placeholder="Display name" autocomplete="off">
+        <input type="text" id="stUser" maxlength="30" placeholder="TikTok username (no @)" autocomplete="off">
+        <button class="ok" id="stSave" type="button">Save</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>🪪 Registered players</h2>
+      <p class="meta" style="margin:0 0 12px">Everyone who registered once is saved here for good. Search by Mobile Legends User ID and Server ID (names can change), by tracking ID, IGN or TikTok name, then enroll them into the current giveaway.</p>
+      <form class="bar" id="pForm">
+        <input type="text" id="pUid" inputmode="numeric" placeholder="User ID" maxlength="12" style="width:130px">
+        <input type="text" id="pSid" inputmode="numeric" placeholder="Server ID" maxlength="6" style="width:110px">
+        <input type="text" id="pQ" placeholder="or tracking ID / IGN / TikTok" maxlength="40" style="flex:1;min-width:180px">
+        <button type="submit">Search</button>
+      </form>
+      <div id="pBox" style="margin-top:12px"></div>
+    </section>
+
+    <section class="card">
+      <h2>🎁 Giveaway</h2>
+      <div class="meta" id="gwInfo">Loading...</div>
+      <div class="bar" style="margin-top:12px">
+        <button class="ok" id="gwOpen" type="button">Open giveaway (24h)</button>
+        <button class="ghost" id="gwClose" type="button">Close registration</button>
+        <button class="ghost" id="gwEnd" type="button">End giveaway</button>
+        <button class="ghost" id="selfToggle" type="button" title="Let registered players enter themselves from the Enter tab">Self-enter: ON</button>
+        <button class="ghost" id="gwPurge" type="button" hidden>Delete ended data</button>
+      </div>
+      <div class="tokenbox">
+        <div class="meta">Sign-up link (anyone can use it while registration is open)</div>
+        <div class="link" id="gwLink"></div>
+        <div class="bar"><button class="sm" type="button" id="copyLink">Copy link</button></div>
+      </div>
+    </section>
+
+    <section class="twin">
+      <div class="card win">
+        <h2>🏆 Declare Winner Mode</h2>
+        <p>Spins the wheel on stream and crowns one alive entry as the permanent winner. The winner stays recorded in the database.</p>
+        <button class="big" id="spinWinner" type="button">Spin for the winner</button>
+      </div>
+      <div class="card elim">
+        <h2>❌ Matirang Matibay Mode</h2>
+        <p>Spins the wheel and crosses the knocked-out player off on screen only. Database records stay untouched.</p>
+        <button class="big alt" id="spinElim" type="button">Spin to knock one out</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>📺 Live wheel (same as the stream)</h2>
+      <div class="bar" style="margin-bottom:10px">
+        <span class="meta">A silent copy of /wheel for you only. Keep this panel off-screen when streaming. Use /wheel?host=1 as the stream-safe panel.</span>
+        <span style="flex:1"></span>
+        <button class="ghost sm" id="previewToggle" type="button" data-off="1">Show preview</button>
+      </div>
+      <iframe id="wheelPreview" title="Live wheel preview" src="about:blank"></iframe>
+    </section>
+
+    <section class="card">
+      <h2>Manual override</h2>
+      <p class="meta" style="margin:0 0 12px">Add a player without a screenshot. This also lifts any block on those names for this giveaway.</p>
+      <form class="bar" id="manualForm">
+        <input type="text" id="mRoblox" placeholder="Mobile Legends IGN" maxlength="24" required>
+        <input type="text" id="mUid" inputmode="numeric" placeholder="User ID" maxlength="12" style="width:130px" required>
+        <input type="text" id="mSid" inputmode="numeric" placeholder="Server ID" maxlength="6" style="width:110px" required>
+        <input type="text" id="mTt" placeholder="TikTok username" maxlength="25" required>
+        <button type="submit">Add to wheel</button>
+        <span style="flex:1"></span>
+        <button class="ghost" id="resetWheel" type="button">🔄 Reset Wheel</button>
+        <button class="danger" id="wipe" type="button">🧽 Wipe D1 Table</button>
+      </form>
+      <form class="bar" id="dqForm" style="margin-top:14px">
+        <input type="text" id="dqName" placeholder="IGN to disqualify" maxlength="24" required>
+        <select id="dqReason" aria-label="Reason">
+          <option value="multiple entries">Multiple entries</option>
+          <option value="fake screenshot">Fake screenshot</option>
+          <option value="other">Other</option>
+        </select>
+        <button class="danger" type="submit">Disqualify</button>
+      </form>
+    </section>
+
+    <section class="board apps">
+      <h2><span>📝 Manual applications</span><span class="meta" id="aCount"></span></h2>
+      <div class="bar"><span class="meta">Accept puts the player on the wheel. Reject just removes the request.</span><span style="flex:1"></span><button class="ghost sm" id="appsClear" type="button">Clear all pending</button></div>
+      <div id="aBox"></div>
+    </section>
+
+    <section class="boards">
+      <div class="board good">
+        <h2><span>Qualified entries</span><span class="meta" id="qCount"></span></h2>
+        <div class="scroll" id="qBox"></div>
+      </div>
+      <div class="board bad">
+        <h2><span>Blacklisted cheaters</span><span class="meta" id="dCount"></span></h2>
+        <div class="scroll" id="dBox"></div>
+        <div class="meta" style="margin-top:12px">Permanently banned</div>
+        <div class="chips" id="banChips"></div>
+      </div>
+    </section>
+  </main>
+</div>
+<div id="toast" hidden></div>
+
+<script>
+(function () {
+  var token = '';
+  var timer = null;
+  var $ = function (id) { return document.getElementById(id); };
+  var NAME_RE = /^[a-zA-Z0-9_]{3,20}$/;
+
+  function h(tag, props) {
+    var el = document.createElement(tag);
+    props = props || {};
+    Object.keys(props).forEach(function (k) {
+      if (k === 'class') el.className = props[k];
+      else if (k.indexOf('on') === 0) el.addEventListener(k.slice(2), props[k]);
+      else el.setAttribute(k, props[k]);
+    });
+    for (var i = 2; i < arguments.length; i++) {
+      [].concat(arguments[i]).forEach(function (c) {
+        el.append(c instanceof Node ? c : document.createTextNode(c == null ? '' : String(c)));
+      });
+    }
+    return el;
+  }
+
+  function toast(msg, isErr) {
+    var t = $('toast');
+    t.textContent = msg; t.className = isErr ? 'err' : ''; t.hidden = false;
+    clearTimeout(toast.t);
+    toast.t = setTimeout(function () { t.hidden = true; }, 3500);
+  }
+
+  function lock(message) {
+    clearInterval(timer);
+    $('app').hidden = true;
+    $('modal').hidden = false;
+    $('modalErr').textContent = message || '';
+    $('tokenInput').value = '';
+    $('tokenInput').focus();
+  }
+
+  var lastFp = '';
+
+  async function api(action, extra) {
+    var res = await fetch('/api/admin-action', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify(Object.assign({ action: action }, extra || {}))
+    });
+    var data = {};
+    try { data = await res.json(); } catch (_) {}
+    if (res.status === 401) { lock('That token was not accepted.'); throw new Error('Unauthorized'); }
+    return data;
+  }
+
+  async function run(action, extra, okMsg) {
+    try {
+      var d = await api(action, extra);
+      if (d.ok) { if (okMsg) toast(okMsg); await refresh(true); }
+      else toast(d.error || 'Action failed.', true);
+      return d;
+    } catch (e) {
+      if (e.message !== 'Unauthorized') toast('Network error.', true);
+      return { ok: false };
+    }
+  }
+
+  function when(ms) { return ms ? new Date(ms).toLocaleString() : ''; }
+
+  function banBtn(name) {
+    return h('button', { class: 'sm danger', type: 'button', onclick: function () {
+      if (confirm('Permanently ban ' + name + '?')) run('perm_ban', { username: name, reason: 'admin ban' }, name + ' banned.');
+    } }, '🚨 Perm Ban');
+  }
+
+  function askReason(name) {
+    return new Promise(function (resolve) {
+      $('rsnName').textContent = name;
+      var m = $('rsn');
+      m.hidden = false;
+      function done(v) { m.hidden = true; m.removeEventListener('click', onClick); resolve(v); }
+      function onClick(e) {
+        var b = e.target.closest('button[data-r]');
+        if (b) done(b.dataset.r);
+        else if (e.target.id === 'rsnCancel' || e.target === m) done(null);
+      }
+      m.addEventListener('click', onClick);
+    });
+  }
+
+  function tid(r) { return /^sw-/i.test(r.tiktok_lower || '') ? String(r.tiktok_lower).toUpperCase() : ''; }
+
+  function renderQualified(rows) {
+    var box = $('qBox'); box.textContent = '';
+    $('qCount').textContent = rows.length + ' entered';
+    if (!rows.length) { box.append(h('div', { class: 'empty' }, 'No qualified entries yet.')); return; }
+    var seen = {};
+    rows.forEach(function (r) { if (r.device_hash) seen[r.device_hash] = (seen[r.device_hash] || 0) + 1; });
+    var body = h('tbody');
+    rows.forEach(function (r) {
+      var shared = r.device_hash && seen[r.device_hash] > 1;
+      body.append(h('tr', { class: shared ? 'dup' : '' },
+        h('td', {}, r.roblox_username), h('td', { class: 'tid' }, tid(r)), h('td', {}, r.tiktok_username),
+        h('td', {}, h('span', { class: 'pill ' + r.status }, r.status)),
+        h('td', {}, r.source),
+        h('td', { class: 'devtag', title: shared ? 'Shares a device with another entry' : 'Device tag' }, r.device_hash ? r.device_hash.slice(0, 6) : '—'),
+        h('td', { class: 'act' },
+          h('button', { class: 'sm ghost', type: 'button', onclick: function () { run('remove_entry', { id: r.id }, 'Entry removed.'); } }, 'Remove'),
+          h('button', { class: 'sm danger', type: 'button', onclick: async function () {
+            var reason = await askReason(r.roblox_username);
+            if (reason) run('disqualify', { id: r.id, reason: reason }, r.roblox_username + ' disqualified.');
+          } }, 'Disqualify'),
+          banBtn(tid(r) || r.roblox_username))));
+    });
+    box.append(h('table', {},
+      h('thead', {}, h('tr', {}, ['IGN', 'Tracking ID', 'TikTok', 'Status', 'Source', 'Device', ''].map(function (t) { return h('th', {}, t); }))), body));
+  }
+
+  function renderDisq(rows, bans) {
+    var box = $('dBox'); box.textContent = '';
+    $('dCount').textContent = rows.length + ' caught';
+    if (!rows.length) box.append(h('div', { class: 'empty' }, 'No cheaters caught.'));
+    else {
+      var body = h('tbody');
+      rows.forEach(function (r) {
+        body.append(h('tr', {},
+          h('td', {}, r.roblox_username), h('td', { class: 'tid' }, tid(r)), h('td', {}, r.reason),
+          h('td', {}, when(r.disqualified_at)), h('td', { class: 'act' }, banBtn(tid(r) || r.roblox_username))));
+      });
+      box.append(h('table', {},
+        h('thead', {}, h('tr', {}, ['IGN', 'Tracking ID', 'Reason', 'When', ''].map(function (t) { return h('th', {}, t); }))), body));
+    }
+    var chips = $('banChips'); chips.textContent = '';
+    if (!bans.length) chips.append(h('span', {}, 'none'));
+    bans.forEach(function (b) { chips.append(h('span', {}, b.username)); });
+  }
+
+  var shotCache = {}, shotLoading = {}, shotImgs = {}, appsSig = '';
+
+  function loadShot(id, img) {
+    if (shotCache[id]) { img.src = shotCache[id]; return; }
+    if (shotLoading[id]) return;
+    shotLoading[id] = true;
+    api('get_screenshot', { id: id }).then(function (d) {
+      if (d.ok && d.screenshot) {
+        shotCache[id] = d.screenshot;
+        if (shotImgs[id]) shotImgs[id].src = d.screenshot;
+      }
+    }).catch(function () {}).then(function () { delete shotLoading[id]; });
+  }
+
+  function renderApps(apps) {
+    $('aCount').textContent = apps.length + ' pending';
+    var sig = apps.map(function (a) { return a.id + ':' + a.dup; }).join(',');
+    if (sig === appsSig) return;
+    appsSig = sig;
+    var live = {};
+    apps.forEach(function (a) { live[a.id] = 1; });
+    Object.keys(shotCache).forEach(function (k) { if (!live[k]) delete shotCache[k]; });
+    var box = $('aBox'); box.textContent = '';
+    if (!apps.length) { box.append(h('div', { class: 'empty' }, 'No applications waiting.')); return; }
+    var groups = {}, order = [];
+    apps.forEach(function (a) {
+      var k = a.roblox_username.toLowerCase();
+      if (!groups[k]) { groups[k] = []; order.push(k); }
+      groups[k].push(a);
+    });
+    var grid = h('div', { class: 'appgrid' });
+    order.forEach(function (k) {
+      var list = groups[k], a = list[list.length - 1];
+      var dup = list.some(function (x) { return x.dup; });
+      var img = h('img', { class: 'shotimg', alt: 'Screenshot from ' + a.roblox_username });
+      shotImgs[a.id] = img;
+      loadShot(a.id, img);
+      grid.append(h('div', { class: 'appcard' + (dup ? ' isdup' : '') },
+        h('div', { class: 'apphead' }, h('b', {}, a.roblox_username),
+          list.length > 1 ? h('span', { class: 'badge warn' }, '×' + list.length) : '',
+          dup ? h('span', { class: 'badge bad' }, 'DUPLICATE') : ''),
+        h('div', { class: 'meta' }, 'ML ID: ' + (a.ml_user_id || '?') + ' (' + (a.ml_server_id || '?') + ') • TikTok: ' + a.tiktok_username + ' • device ' + (a.device_hash ? a.device_hash.slice(0, 6) : '—') + ' • ' + when(a.created_at)),
+        img,
+        h('div', { class: 'meta' }, 'Scan said: ' + (a.reason || '—')),
+        a.note ? h('div', { class: 'note' }, '“' + a.note + '”') : '',
+        h('div', { class: 'wrap' },
+          h('button', { class: 'sm ok', type: 'button', onclick: function () { run('app_accept', { id: a.id }, a.roblox_username + ' accepted.'); } }, '✅ Accept'),
+          h('button', { class: 'sm danger', type: 'button', onclick: function () {
+            var why = prompt('Reason for rejecting (optional, the player will see it):', '');
+            if (why === null) return;
+            run('app_reject', { id: a.id, reason: why }, a.roblox_username + ' rejected.');
+          } }, '❌ Reject'),
+          h('button', { class: 'sm ghost', type: 'button', onclick: function () {
+            if (confirm('Remove every pending application from ' + a.roblox_username + '? Other players are not affected.')) {
+              run('app_remove_username', { username: a.roblox_username }, 'Removed their applications.');
+            }
+          } }, '🗑 All from this username'),
+          a.device_hash ? h('button', { class: 'sm ghost', type: 'button', onclick: function () {
+            if (confirm('Remove every pending application from this device?')) {
+              run('app_remove_device', { device_hash: a.device_hash }, 'Removed applications from that device.');
+            }
+          } }, '📱 All from this device') : '')));
+    });
+    box.append(grid);
+  }
+
+  function askMigrate() {
+    return new Promise(function (resolve) {
+      var m = $('mig');
+      m.hidden = false;
+      function done(v) { m.hidden = true; m.removeEventListener('click', onClick); resolve(v); }
+      function onClick(e) {
+        var b = e.target.closest('button[data-c]');
+        if (b) done(b.dataset.c === '1' ? 'carry' : 'empty');
+        else if (e.target.id === 'migCancel' || e.target === m) done(null);
+      }
+      m.addEventListener('click', onClick);
+    });
+  }
+
+  function renderSaved(list, hasActive) {
+    var box = $('savedBox'); box.textContent = '';
+    $('migStart').disabled = !hasActive;
+    if (!list.length) { box.append(h('div', { class: 'empty' }, 'No saved sessions.')); return; }
+    box.append(h('div', { class: 'meta' }, 'Saved sessions (kept until you delete them)'));
+    list.forEach(function (s) {
+      var into = h('button', { class: 'sm ok', type: 'button', onclick: async function () {
+        if (!confirm('Copy the entries from saved session #' + s.id + ' into the current session? Duplicates, banned names and anyone disqualified here are skipped. The saved session stays as it is.')) return;
+        var d = await run('migrate_in', { id: s.id }, null);
+        if (d.ok) toast('Migrated ' + d.entries + ' entries' + (d.disqualified ? ' and ' + d.disqualified + ' disqualifications' : '') + '.');
+      } }, 'Migrate into current');
+      into.disabled = !hasActive;
+      var del = h('button', { class: 'sm danger', type: 'button', onclick: function () {
+        if (confirm('Delete saved session #' + s.id + ' and all its entries? This cannot be undone.')) run('delete_saved', { id: s.id }, 'Saved session deleted.');
+      } }, 'Delete');
+      box.append(h('div', { class: 'savedrow' },
+        h('div', {}, h('b', {}, 'Session #' + s.id),
+          h('div', { class: 'meta' }, 'Saved ' + when(s.ended_at || s.opened_at) + ' • ' + s.entries + ' entries • ' + s.disqualified + ' disqualified' + (s.pending ? ' • ' + s.pending + ' pending' : ''))),
+        h('div', { class: 'wrap' }, into, del)));
+    });
+  }
+
+  function renderGiveaway(g, now) {
+    var info;
+    if (!g) info = 'No giveaway yet. Tap "Open giveaway" to start one.';
+    else if (g.status === 'open') {
+      var mins = Math.max(0, Math.round((g.expires_at - now) / 60000));
+      info = 'Registration is OPEN until ' + when(g.expires_at) + ' (' + Math.floor(mins / 60) + 'h ' + (mins % 60) + 'm left).';
+    } else if (g.status === 'closed') info = 'Registration is closed. The wheel is live for this giveaway.';
+    else info = 'This giveaway has ended. Its entries stay here for review until you open the next one.';
+    $('gwInfo').textContent = info;
+    var active = g && g.status !== 'ended';
+    $('gwOpen').disabled = !!active;
+    $('gwClose').disabled = !(g && g.status === 'open');
+    $('gwEnd').disabled = !active;
+    $('gwPurge').hidden = !(g && g.status === 'ended');
+    $('gwLink').textContent = location.origin + '/';
+  }
+
+  function copyText(text, label) {
+    var done = function () { toast(label + ' copied.'); };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, function () { toast('Copy failed. Select it manually.', true); });
+    else toast('Copy is not available here. Select it manually.', true);
+  }
+
+  var selfOn = true;
+  function renderNotifs(reqs, appCount) {
+    var n = reqs.length + appCount;
+    $('bellN').textContent = String(n);
+    $('bell').classList.toggle('bellhot', n > 0);
+    var box = $('notifBox'); box.textContent = '';
+    if (!n) { box.append(h('div', { class: 'empty' }, 'Nothing waiting for you.')); return; }
+    if (appCount) {
+      box.append(h('div', { class: 'meta', style: 'margin-bottom:10px' }, '📝 ' + appCount + ' manual review application' + (appCount === 1 ? '' : 's') + ' waiting. '),
+        h('button', { class: 'sm ghost', type: 'button', style: 'margin-bottom:12px', onclick: function () {
+          var el = document.querySelector('.board.apps'); if (el) el.scrollIntoView({ behavior: 'smooth' });
+        } }, 'Go to applications'));
+    }
+    if (reqs.length) {
+      box.append(h('div', { class: 'meta', style: 'margin-bottom:8px' }, 'Change requests (display name and TikTok @username)'));
+      reqs.forEach(function (r) {
+        var text = r.kind === 'tiktok'
+          ? '🎵 TikTok  @' + r.old_name + '  →  @' + r.new_name + (r.clash ? '  ⚠ already linked to another player, cannot approve' : '')
+          : '✏️ Name  ' + r.old_name + '  →  ' + r.new_name + (r.clash ? '  ⚠ taken, will show as "' + r.new_name + ' #' + r.tracking_id.slice(-4) + '"' : '');
+        box.append(h('div', { class: 'nreq' },
+          h('div', { class: 'tid' }, r.tracking_id),
+          h('div', {}, text),
+          h('div', { class: 'meta' }, when(r.created_at)),
+          h('div', { class: 'act' },
+            h('button', { class: 'sm ok', type: 'button', onclick: function () { run('name_approve', { id: r.id }, 'Request approved.'); } }, 'Approve'),
+            h('button', { class: 'sm danger', type: 'button', onclick: function () {
+              var why = prompt('Short reason for the player (optional):', ''); if (why === null) return;
+              run('name_reject', { id: r.id, reason: why }, 'Request rejected.');
+            } }, 'Reject'))));
+      });
+    }
+  }
+
+  async function refresh(force) {
+    var d;
+    try { d = await api('get_state', force ? { force: true } : { fp: lastFp }); } catch (_) { return; }
+    if (!d.ok) return;
+    renderGiveaway(d.giveaway, d.now);
+    if (d.unchanged) return;
+    lastFp = d.fp || '';
+    renderSaved(d.saved || [], !!(d.giveaway && d.giveaway.status !== 'ended'));
+    renderApps(d.applications || []);
+    renderNotifs(d.name_requests || [], (d.applications || []).length);
+    renderQualified(d.qualified);
+    $('entryCount').textContent = '👥 ' + d.qualified.length + ' entered';
+    renderDisq(d.disqualified, d.blacklist);
+    var c = d.config || {};
+    selfOn = c.self_enter !== 'off';
+    $('selfToggle').textContent = 'Self-enter: ' + (selfOn ? 'ON' : 'OFF');
+    if (d.streamer && document.activeElement !== $('stName') && document.activeElement !== $('stUser')) {
+      $('stName').value = d.streamer.name;
+      $('stUser').value = d.streamer.username;
+    }
+    $('cmdInfo').textContent = 'Command: ' + (c.wheel_command || 'idle') + (c.last_landed ? ' • Last landed: ' + c.last_landed : '');
+  }
+
+  async function unlock(candidate) {
+    token = candidate;
+    try {
+      var d = await api('verify');
+      if (!d.ok) return false;
+    } catch (_) { return false; }
+    $('modal').hidden = true;
+    $('app').hidden = false;
+    await refresh(true);
+    clearInterval(timer);
+    timer = setInterval(function () { if (!document.hidden) refresh(); }, 4000);
+    return true;
+  }
+
+  $('authForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    $('modalErr').textContent = 'Checking...';
+    var ok = await unlock($('tokenInput').value.trim());
+    if (!ok) $('modalErr').textContent = 'That token was not accepted.';
+  });
+
+  $('spinWinner').addEventListener('click', async function () {
+    if (!confirm('Crown a permanent winner now?')) return;
+    var b = this; b.disabled = true;
+    var d = await run('spin_winner', {});
+    if (d.ok) toast('Spinning for the winner...');
+    setTimeout(function () { b.disabled = false; }, 14000);
+  });
+  $('spinElim').addEventListener('click', async function () {
+    var b = this; b.disabled = true;
+    var d = await run('spin_elim', {});
+    if (d.ok) toast('Spinning to knock one out...');
+    setTimeout(function () { b.disabled = false; }, 17000);
+  });
+  $('resetWheel').addEventListener('click', function () {
+    if (confirm('Reset the wheel? All entries come back alive and any winner is cleared.')) run('reset_wheel', {}, 'Wheel reset.');
+  });
+  $('wipe').addEventListener('click', function () {
+    if (confirm('Wipe all giveaways (including saved sessions), entries, applications, cheater logs and alerts? Permanent bans are kept. This cannot be undone.')) run('wipe_d1', {}, 'Tables wiped.');
+  });
+  $('migStart').addEventListener('click', async function () {
+    var choice = await askMigrate();
+    if (!choice) return;
+    var d = await run('save_and_new', { carry: choice === 'carry' }, null);
+    if (d.ok) toast(choice === 'carry' ? 'Saved. New session opened with ' + d.carried.entries + ' entries carried over.' : 'Saved. New empty session opened.');
+  });
+  function renderPlayers(list, hasGiveaway) {
+    var box = $('pBox'); box.textContent = '';
+    if (!list.length) { box.append(h('div', { class: 'empty' }, 'No registered player found. They can register once on the sign-up page, or use Manual override below.')); return; }
+    var body = h('tbody');
+    list.forEach(function (p) {
+      body.append(h('tr', {},
+        h('td', { class: 'tid' }, p.tracking_id), h('td', {}, p.ign),
+        h('td', {}, p.ml_user_id + ' (' + p.ml_server_id + ')'), h('td', {}, p.tiktok_username),
+        h('td', {}, p.won ? '🏆 won' : p.enrolled ? '✅ on wheel' : '—'),
+        h('td', { class: 'act' },
+          h('button', { class: 'sm ok', type: 'button', disabled: !hasGiveaway || !!p.enrolled, onclick: function () {
+            run('enroll_player', { id: p.id }, p.ign + ' enrolled.').then(function () { searchPlayers(); });
+          } }, 'Enroll'),
+          h('button', { class: 'sm ghost', type: 'button', onclick: async function () {
+            var n = prompt('IGN for ' + p.tracking_id + ':', p.ign); if (n === null) return;
+            var t = prompt('TikTok username:', p.tiktok_username); if (t === null) return;
+            await run('update_player', { id: p.id, ign: n, tiktok: t }, 'Player updated.'); searchPlayers();
+          } }, 'Edit'),
+          banBtn(p.tracking_id),
+          h('button', { class: 'sm danger', type: 'button', onclick: async function () {
+            if (!confirm('Delete ' + p.ign + ' (' + p.tracking_id + ') from the registry? They could register again.')) return;
+            await run('delete_player', { id: p.id }, 'Player deleted.'); searchPlayers();
+          } }, 'Delete'))));
+    });
+    box.append(h('div', { style: 'overflow-x:auto' }, h('table', {}, h('thead', {}, h('tr', {}, ['Tracking ID', 'IGN', 'User ID (Server)', 'TikTok', 'This giveaway', ''].map(function (t) { return h('th', {}, t); }))), body)));
+  }
+
+  async function searchPlayers() {
+    try {
+      var d = await api('search_players', { userId: $('pUid').value.trim(), serverId: $('pSid').value.trim(), q: $('pQ').value.trim() });
+      if (d.ok) renderPlayers(d.players || [], !!d.giveaway); else toast(d.error || 'Search failed.', true);
+    } catch (_) {}
+  }
+  ['pUid', 'pSid'].forEach(function (id) { $(id).addEventListener('input', function () { this.value = this.value.replace(/\D/g, ''); }); });
+  $('pForm').addEventListener('submit', function (e) { e.preventDefault(); searchPlayers(); });
+
+  $('bell').addEventListener('click', function () { $('notifCard').scrollIntoView({ behavior: 'smooth' }); });
+  $('selfToggle').addEventListener('click', function () {
+    run('set_self_enter', { on: !selfOn }, 'Self-enter ' + (selfOn ? 'turned off.' : 'turned on.'));
+  });
+
+  $('stSave').addEventListener('click', async function () {
+    var b = this; b.disabled = true;
+    await run('set_streamer', { name: $('stName').value.trim(), username: $('stUser').value.trim() }, 'Streamer saved.');
+    b.disabled = false;
+  });
+
+  $('gwOpen').addEventListener('click', async function () {
+    if (!confirm('Open a new giveaway? Registration stays open for 24 hours. You can close it earlier.')) return;
+    await run('open_giveaway', {}, 'Giveaway opened.');
+  });
+  $('gwClose').addEventListener('click', function () {
+    if (confirm('Close registration now? Nobody can sign up after this. The wheel keeps running.')) run('close_registration', {}, 'Registration closed.');
+  });
+  $('gwEnd').addEventListener('click', function () {
+    if (confirm('End this giveaway? Registration closes, the stream wheel clears and pending applications are rejected. Entries stay here until you open the next giveaway.')) run('end_giveaway', {}, 'Giveaway ended.');
+  });
+  $('gwPurge').addEventListener('click', function () {
+    if (confirm('Delete the ended giveaway data now? This cannot be undone.')) run('purge_ended', {}, 'Ended giveaway data deleted.');
+  });
+  $('copyLink').addEventListener('click', function () { copyText($('gwLink').textContent, 'Link'); });
+  $('appsClear').addEventListener('click', function () {
+    if (confirm('Clear ALL pending applications? Use the per-username button to remove just one person.')) run('app_clear_all', {}, 'Pending applications cleared.');
+  });
+  $('clearAlerts').addEventListener('click', function () { run('clear_alerts', {}, 'Banner cleared.'); });
+  $('manualForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    var r = $('mRoblox').value.replace(/\s+/g, ' ').trim(), u = $('mUid').value.trim(), v = $('mSid').value.trim(), tt = $('mTt').value.trim();
+    if (r.length < 3 || !/^\d{5,12}$/.test(u) || !/^\d{3,6}$/.test(v) || tt.length < 2) { toast('Enter the IGN, User ID (5-12 digits), Server ID (3-6 digits) and TikTok username.', true); return; }
+    var d = await run('manual_add', { ign: r, userId: u, serverId: v, tiktok: tt }, r + ' added.');
+    if (d.ok) { $('mRoblox').value = ''; $('mUid').value = ''; $('mSid').value = ''; $('mTt').value = ''; toast('Tracking ID: ' + d.tracking_id); }
+  });
+
+  $('dqForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    var n = $('dqName').value.trim();
+    if (n.length < 3) { toast('Enter the IGN (3+ characters).', true); return; }
+    var d = await run('disqualify', { roblox: n, reason: $('dqReason').value }, n + ' disqualified.');
+    if (d.ok) $('dqName').value = '';
+  });
+
+  $('previewToggle').addEventListener('click', function () {
+    var f = $('wheelPreview');
+    if (this.dataset.off === '1') { f.src = '/wheel?embed=1'; this.dataset.off = ''; this.textContent = 'Hide preview'; }
+    else { f.src = 'about:blank'; this.dataset.off = '1'; this.textContent = 'Show preview'; }
+  });
+  document.addEventListener('visibilitychange', function () { if (!document.hidden && token) refresh(); });
+
+  var params = new URLSearchParams(location.search);
+  var urlToken = params.get('token');
+  if (urlToken) history.replaceState(null, '', location.pathname);
+  if (urlToken) {
+    unlock(urlToken).then(function (ok) { if (!ok) lock('That token was not accepted.'); });
+  } else {
+    lock('');
+  }
+})();
+</script>
+</body>
+</html>
