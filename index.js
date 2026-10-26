@@ -188,18 +188,24 @@ const readConfig = async (env) => {
   return config;
 };
 
+const tokenMatches = async (supplied, secret) => {
+  const want = String(secret || '').trim();
+  if (!want) return false;
+  const enc = new TextEncoder();
+  const [a, b] = await Promise.all([
+    crypto.subtle.digest('SHA-256', enc.encode(String(supplied || '').trim())),
+    crypto.subtle.digest('SHA-256', enc.encode(want))
+  ]);
+  return crypto.subtle.timingSafeEqual(a, b);
+};
+
 const isAdmin = async (request, env, url) => {
   if (!env.STREAMER_TOKEN) return false;
   const auth = request.headers.get('Authorization') || '';
   const supplied = auth.startsWith('Bearer ')
     ? auth.slice(7)
     : request.headers.get('X-Admin-Token') || url.searchParams.get('token') || '';
-  const enc = new TextEncoder();
-  const [a, b] = await Promise.all([
-    crypto.subtle.digest('SHA-256', enc.encode(supplied)),
-    crypto.subtle.digest('SHA-256', enc.encode(env.STREAMER_TOKEN))
-  ]);
-  return crypto.subtle.timingSafeEqual(a, b);
+  return tokenMatches(supplied, env.STREAMER_TOKEN);
 };
 
 
@@ -294,12 +300,7 @@ const matchesToken = async (request, secret) => {
   if (!secret) return false;
   const auth = request.headers.get('Authorization') || '';
   const supplied = auth.startsWith('Bearer ') ? auth.slice(7) : '';
-  const enc = new TextEncoder();
-  const [a, b] = await Promise.all([
-    crypto.subtle.digest('SHA-256', enc.encode(supplied)),
-    crypto.subtle.digest('SHA-256', enc.encode(secret))
-  ]);
-  return crypto.subtle.timingSafeEqual(a, b);
+  return tokenMatches(supplied, secret);
 };
 
 const STREAM_ACTIONS = new Set([
@@ -310,12 +311,7 @@ const isOwner = async (request, env) => {
   if (!env.OWNER_TOKEN_2) return false;
   const auth = request.headers.get('Authorization') || '';
   const supplied = auth.startsWith('Bearer ') ? auth.slice(7) : '';
-  const enc = new TextEncoder();
-  const [a, b] = await Promise.all([
-    crypto.subtle.digest('SHA-256', enc.encode(supplied)),
-    crypto.subtle.digest('SHA-256', enc.encode(env.OWNER_TOKEN_2))
-  ]);
-  return crypto.subtle.timingSafeEqual(a, b);
+  return tokenMatches(supplied, env.OWNER_TOKEN_2);
 };
 
 async function gatekeep(env, config, body, now) {
@@ -680,6 +676,7 @@ async function handlePublicList(request, env) {
 
 async function handleOwnerAction(request, env) {
   if (request.method !== 'POST') return json({ ok: false, error: 'Method not allowed.' }, 405);
+  if (!String(env.OWNER_TOKEN_2 || '').trim()) return json({ ok: false, error: 'OWNER_TOKEN_2 is not set on this Worker.' }, 503);
   if (!(await isOwner(request, env))) return json({ ok: false, error: 'Unauthorized.' }, 401);
   let body = {};
   try {
@@ -779,6 +776,7 @@ async function handleStreamAction(request, env, url) {
 
 async function handleAdminAction(request, env, url, authed = false) {
   if (request.method !== 'POST') return json({ ok: false, error: 'Method not allowed.' }, 405);
+  if (!authed && !String(env.STREAMER_TOKEN || '').trim()) return json({ ok: false, error: 'STREAMER_TOKEN is not set on this Worker.' }, 503);
   if (!authed && !(await isAdmin(request, env, url))) return json({ ok: false, error: 'Unauthorized.' }, 401);
 
   let body;

@@ -300,12 +300,15 @@ input:focus,button:focus-visible{outline:2px solid var(--neon);outline-offset:2p
     } catch (_) {}
   }
 
+  var unlockError = '';
+
   async function unlock(candidate) {
     token = candidate;
+    unlockError = '';
     try {
       var d = await api('verify');
-      if (!d.ok) return false;
-    } catch (_) { return false; }
+      if (!d.ok) { unlockError = d.error || 'Server error.'; return false; }
+    } catch (e) { if (e.message !== 'Unauthorized') unlockError = 'Could not reach the server.'; return false; }
     $('modal').hidden = true;
     $('app').hidden = false;
     await refresh();
@@ -318,13 +321,13 @@ input:focus,button:focus-visible{outline:2px solid var(--neon);outline-offset:2p
     e.preventDefault();
     $('modalErr').textContent = 'Checking...';
     var ok = await unlock($('tokenInput').value.trim());
-    if (!ok) $('modalErr').textContent = 'That token was not accepted.';
+    if (!ok) $('modalErr').textContent = unlockError || 'That token was not accepted.';
   });
   $('refreshBtn').addEventListener('click', refresh);
 
   var urlToken = new URLSearchParams(location.search).get('token');
   if (urlToken) history.replaceState(null, '', location.pathname);
-  if (urlToken) unlock(urlToken).then(function (ok) { if (!ok) lock('That token was not accepted.'); });
+  if (urlToken) unlock(urlToken).then(function (ok) { if (!ok) lock(unlockError || 'That token was not accepted.'); });
   else lock('');
 })();
 </script>
