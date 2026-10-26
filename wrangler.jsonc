@@ -1,0 +1,44 @@
+{
+  // TikSpin VIP - Cloudflare Worker configuration.
+  // Replace every value that says YOUR-... before deploying.
+  "$schema": "node_modules/wrangler/config-schema.json",
+
+  // Worker name (becomes YOUR-WORKER-NAME.<your-subdomain>.workers.dev).
+  "name": "YOUR-WORKER-NAME",
+
+  // The Worker entry file. llm.js and llm.json must sit next to it.
+  "main": "index.js",
+
+  // Use a date on or before today's date.
+  "compatibility_date": "2025-09-01",
+
+  // Static files served to visitors: index.html, streamer.html, owner.html,
+  // wheel.html and images/. The .assetsignore file keeps the Worker source,
+  // schema.sql and this config out of the public files.
+  "assets": {
+    "directory": "./",
+    "binding": "ASSETS"
+  },
+
+  // Your D1 database. Run schema.sql on it once (see README.txt).
+  // Create it with:  wrangler d1 create YOUR-D1-DATABASE-NAME
+  // then paste the database_id it prints below.
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "YOUR-D1-DATABASE-NAME",
+      "database_id": "YOUR-D1-DATABASE-ID"
+    }
+  ],
+
+  "observability": { "enabled": true }
+
+  // SECRETS are NOT stored in this file. Add them with:
+  //   wrangler secret put STREAMER_TOKEN
+  //   wrangler secret put OWNER_TOKEN_2
+  //   wrangler secret put STREAM_TOKEN     (optional)
+
+  // Optional: use your own domain instead of workers.dev. Remove the
+  // slashes in front of "routes" and put your domain in.
+  // ,"routes": [{ "pattern": "YOUR-DOMAIN.com", "custom_domain": true }]
+}
