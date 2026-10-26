@@ -10,7 +10,7 @@
   "main": "index.js",
 
   // Use a date on or before today's date.
-  "compatibility_date": "2025-09-01",
+  "compatibility_date": "2026-10-26",
 
   // Static files served to visitors: index.html, streamer.html, owner.html,
   // wheel.html and images/. The .assetsignore file keeps the Worker source,
@@ -26,8 +26,8 @@
   "d1_databases": [
     {
       "binding": "DB",
-      "database_name": "YOUR-D1-DATABASE-NAME",
-      "database_id": "YOUR-D1-DATABASE-ID"
+      "database_name": "tikspin_vip",
+      "database_id": "f8e7f69f-6495-4b32-abdd-ace57bb37052"
     }
   ],
 
